@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MIARS PhD Literature System</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--n:#1F4E79;--b:#2E74B5;--g:#0F6E56;--lg:#E1F5EE;--dg:#085041;
+--r:#A32D2D;--lr:#FCEBEB;--a:#854F0B;--la:#FAEEDA;--p:#3C3489;--lp:#EEEDFE;
+--gr:#F8F9FA;--bd:#E0E0E0;--tx:#212121;--mu:#666}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:var(--tx);font-size:13px}
+.top{background:var(--n);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;position:sticky;top:0;z-index:100}
+.logo{color:#fff;font-size:13px;font-weight:700}
+.logo small{font-size:9px;color:#B5D4F4;display:block;font-weight:400}
+.tbts{display:flex;gap:5px;flex-wrap:wrap}
+.btn{padding:5px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:11px;cursor:pointer}
+.btn:hover{background:rgba(255,255,255,.15)}
+.btn-g{background:var(--g);border-color:var(--g)}
+.btn-g:hover{opacity:.88}
+.kajian{background:var(--b);padding:7px 14px}
+.ktitle{color:#B5D4F4;font-size:10px;font-weight:700;margin-bottom:2px}
+.kname{color:#fff;font-size:11px;line-height:1.4;margin-bottom:5px}
+.rochips{display:flex;gap:4px;flex-wrap:wrap}
+.roc{background:#EEEDFE;color:#26215C;font-size:10px;padding:2px 8px;border-radius:9px;border:1px solid #AFA9EC}
+.sbar{background:#fff;padding:7px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:7px;border-bottom:1px solid var(--bd)}
+.sv{font-size:17px;font-weight:700;color:var(--n);text-align:center}
+.sl{font-size:10px;color:var(--mu);text-align:center}
+.tabs{background:#fff;border-bottom:2px solid var(--bd);padding:0 14px;display:flex;overflow-x:auto;position:sticky;top:44px;z-index:99}
+.tab{padding:7px 11px;font-size:11px;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tab.on{color:var(--n);border-bottom-color:var(--n);font-weight:700}
+.panel{display:none;padding:11px 14px}.panel.on{display:block}
+.toolbar{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;align-items:center}
+input.s{flex:1;min-width:130px;padding:6px 9px;font-size:11px;border:1px solid var(--bd);border-radius:5px}
+input.s:focus{outline:none;border-color:var(--n)}
+select.f{padding:5px 7px;font-size:11px;border:1px solid var(--bd);border-radius:5px;background:#fff}
+.cards{display:flex;flex-direction:column;gap:7px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:7px;padding:10px 12px;cursor:pointer;transition:border-color .12s}
+.card:hover{border-color:var(--b)}
+.card.sel{border:2px solid var(--n)}
+.ctop{display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap}
+.kbdg{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;background:var(--n);color:#fff}
+.tbdg{font-size:10px;padding:2px 6px;border-radius:5px}
+.ybdg{font-size:10px;color:var(--mu);background:var(--gr);padding:2px 5px;border-radius:5px}
+.nbdg{font-size:10px;padding:2px 5px;border-radius:5px}
+.cmy{background:#E1F5EE;color:#085041}.cint{background:#E6F1FB;color:#0C447C}
+.ct{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:2px;line-height:1.4}
+.ca{font-size:10px;color:var(--mu);margin-bottom:4px}
+.cfoot{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.gtags{display:flex;gap:3px;flex-wrap:wrap}
+.gtag{font-size:10px;padding:1px 5px;border-radius:5px;background:var(--lr);color:var(--r)}
+.cact{display:flex;gap:3px}
+.ib{padding:3px 7px;font-size:10px;border:1px solid var(--bd);border-radius:4px;background:#fff;cursor:pointer}
+.ib:hover{background:var(--gr)}
+.det{background:#fff;border:2px solid var(--n);border-radius:8px;padding:11px;margin-bottom:9px}
+.dt{font-size:13px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:2px}
+.da{font-size:11px;color:var(--mu);margin-bottom:7px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:7px 0}
+.df label{font-size:10px;color:var(--mu);display:block;margin-bottom:1px}
+.df p{font-size:11px}
+.slbl{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin:7px 0 3px}
+.tl{list-style:none}
+.tl li{font-size:11px;padding:2px 0;display:flex;gap:4px;line-height:1.5}
+.tl li::before{content:"✓";color:var(--g);flex-shrink:0;font-size:10px;margin-top:2px}
+.xl li::before{content:"✗";color:var(--r)}
+.mb{background:var(--lg);border-radius:6px;padding:8px 10px;margin-top:5px}
+.mb .ml{font-size:10px;font-weight:700;color:var(--g);margin-bottom:2px}
+.mb p{font-size:11px;color:var(--dg);line-height:1.5}
+.qb{background:var(--gr);border-left:3px solid var(--n);padding:7px 10px;margin-top:5px;font-size:11px;font-style:italic;line-height:1.6;border-radius:0 5px 5px 0}
+.cprow{display:flex;justify-content:flex-end;gap:4px;margin-top:4px}
+.bchip{font-size:10px;padding:2px 6px;border-radius:5px;background:var(--n);color:#fff}
+.rpchip{font-size:10px;padding:2px 6px;border-radius:5px;background:var(--lp);color:var(--p)}
+.tchip{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.tc{border-radius:6px;padding:8px 10px;border:1px solid var(--bd);background:#fff}
+.tc-k{font-size:10px;font-weight:700;color:var(--mu);margin-bottom:2px}
+.tc-n{font-size:11px;font-weight:700;margin-bottom:4px;line-height:1.3}
+.prog{height:4px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:2px}
+.pf{height:100%;border-radius:3px}
+.tc-s{font-size:10px}
+table.mx{border-collapse:collapse;font-size:11px;width:100%}
+table.mx th{padding:5px 6px;border-bottom:1px solid var(--bd);color:var(--mu);font-weight:700;white-space:nowrap;background:var(--gr);text-align:left;position:sticky;top:80px}
+table.mx td{padding:4px 6px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+table.mx tr:hover td{background:#fafafa}
+.mc{color:var(--g);text-align:center;font-weight:700}.md{color:#ddd;text-align:center}
+.ae{display:flex;gap:6px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:11px;line-height:1.6}
+.an{font-size:10px;color:var(--mu);min-width:18px;padding-top:1px}
+.at{flex:1}
+.ct2{margin-bottom:11px}
+.ch{font-size:12px;font-weight:700;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid var(--bd)}
+.ci{display:flex;align-items:center;justify-content:space-between;padding:4px 7px;background:var(--gr);border-radius:5px;margin-bottom:2px;font-size:11px;gap:5px}
+.cr{color:var(--b);flex:1}
+.nov{background:var(--lg);border-radius:7px;padding:11px 13px;margin-bottom:9px;border:1px solid #5DCAA5}
+.nov h3{font-size:12px;font-weight:700;color:var(--dg);margin-bottom:3px}
+.nov p{font-size:11px;color:var(--dg);line-height:1.5}
+.ge{border:1px solid var(--bd);border-radius:6px;padding:8px 10px;margin-bottom:5px;display:flex;gap:7px;background:#fff}
+.ge-t{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:3px}
+.ge-m{font-size:11px;color:var(--g);margin-top:3px}
+.empty{text-align:center;padding:2rem;color:var(--mu);font-size:12px}
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center}
+.mb2{background:#fff;border-radius:9px;padding:1rem;width:min(96%,540px);max-height:90vh;overflow-y:auto}
+.mt{font-size:13px;font-weight:700;color:var(--n);margin-bottom:9px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.ff{display:flex;flex-direction:column;gap:2px}
+.ff.full{grid-column:1/-1}
+.ff label{font-size:10px;color:var(--mu)}
+.ff input,.ff select,.ff textarea{width:100%;padding:5px 8px;font-size:11px;border:1px solid var(--bd);border-radius:5px}
+.ff textarea{min-height:48px;resize:vertical}
+.mft{display:flex;gap:5px;justify-content:flex-end;margin-top:8px}
+.sb{padding:6px 11px;border-radius:5px;font-size:11px;cursor:pointer;border:1px solid var(--bd);background:#fff}
+.sb-p{background:var(--n);color:#fff;border-color:var(--n)}
+.sb-g{background:var(--g);color:#fff;border-color:var(--g)}
+.toast{position:fixed;bottom:13px;right:13px;background:var(--dg);color:#fff;font-size:11px;padding:6px 12px;border-radius:6px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.osc{overflow-x:auto}
+/* Import panel */
+.imp-box{background:#fff;border:2px dashed var(--n);border-radius:9px;padding:13px;margin-bottom:11px}
+.imp-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-bottom:10px}
+.step{background:var(--gr);border-radius:7px;padding:8px 10px;text-align:center}
+.step-n{font-size:22px;font-weight:700;color:var(--n);display:block}
+.step-t{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.step-d{font-size:10px;color:var(--mu);line-height:1.4}
+.jta{width:100%;min-height:130px;padding:8px 10px;font-size:11px;border:1px solid var(--bd);border-radius:6px;font-family:monospace;resize:vertical}
+.jta:focus{outline:none;border-color:var(--n)}
+.ir{margin-top:7px;padding:8px 10px;border-radius:6px;font-size:11px;display:none;white-space:pre-wrap}
+.ir.ok{background:var(--lg);color:var(--dg)}
+.ir.err{background:var(--lr);color:var(--r)}
+.howto{background:#E6F1FB;border-radius:7px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:#0C447C;line-height:1.7}
+.prompt-box{background:var(--gr);border-radius:6px;padding:9px 11px;font-size:11px;border:1px solid var(--bd);font-style:italic;line-height:1.6;margin-top:5px}
+@media(max-width:600px){.dgrid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.ff.full{grid-column:1}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">MIARS PhD Literature System
+    <small>10 Tema · Thesis Matrix · Citation Bank · Gap Bank · APA 7 · Import AI</small>
+  </div>
+  <div class="tbts">
+    <button class="btn" onclick="openAnal()">📊 Analitik</button>
+    <button class="btn" onclick="exportJSON()">💾 Backup</button>
+    <button class="btn" onclick="document.getElementById('impFile').click()">📂 Import Backup</button>
+    <input type="file" id="impFile" accept=".json" style="display:none" onchange="loadBackup(this)">
+    <button class="btn" onclick="exportAPA()">📄 APA TXT</button>
+    <button class="btn btn-g" onclick="openEdit(null)">+ Tambah Manual</button>
+  </div>
+</div>
+
+<div class="kajian">
+  <div class="ktitle">📌 Tajuk Kajian PhD</div>
+  <div class="kname">PEMBANGUNAN DAN PENILAIAN MODEL PEMBELAJARAN INKUIRI ADAPTIF BERASASKAN RETRIEVAL-AUGMENTED GENERATION (RAG) DAN SOKONGAN BERPERINGKAT TERHADAP PENGUASAAN SEJARAH MURID</div>
+  <div class="rochips">
+    <span class="roc"><b>RO1</b> Menganalisis keperluan pembangunan Model MIARS</span>
+    <span class="roc"><b>RO2</b> Merekabentuk dan membangunkan Model MIARS</span>
+    <span class="roc"><b>RO3</b> Menilai kebolehgunaan dan keberkesanan Model MIARS</span>
+  </div>
+</div>
+
+<div class="sbar" id="sbar"></div>
+
+<div class="tabs">
+  <div class="tab on" onclick="goTab('imp')">📥 Import AI</div>
+  <div class="tab" onclick="goTab('db')">📚 Database</div>
+  <div class="tab" onclick="goTab('tm')">🎯 Thesis Matrix</div>
+  <div class="tab" onclick="goTab('ev')">🗺️ Evidence</div>
+  <div class="tab" onclick="goTab('cit')">💬 Citation</div>
+  <div class="tab" onclick="goTab('gap')">📊 Gap Bank</div>
+  <div class="tab" onclick="goTab('apa')">📖 APA 7</div>
+  <div class="tab" onclick="goTab('theme')">🗂️ Tema</div>
+</div>
+
+<!-- IMPORT AI -->
+<div class="panel on" id="panel-imp">
+  <div class="howto">
+    <b>🤖 Cara import artikel TANPA taip manual — 4 langkah:</b><br>
+    1️⃣ Upload PDF artikel ke <b>chat Claude</b> (claude.ai)<br>
+    2️⃣ Salin arahan di bawah → tampal ke Claude bersama PDF<br>
+    3️⃣ Claude jana JSON → salin keseluruhan JSON<br>
+    4️⃣ Tampal JSON di kotak bawah → klik <b>Import Artikel</b> ✓
+  </div>
+  <div style="margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:var(--n);margin-bottom:5px">📋 Arahan untuk Claude (klik Salin, tampal ke Claude bersama PDF):</div>
+    <div class="prompt-box" id="claudePrompt">Analisis artikel PDF ini untuk kajian PhD saya: PEMBANGUNAN DAN PENILAIAN MODEL PEMBELAJARAN INKUIRI ADAPTIF BERASASKAN RAG DAN SOKONGAN BERPERINGKAT TERHADAP PENGUASAAN SEJARAH MURID (MIARS). RO1=analisis keperluan, RO2=bangunkan model, RO3=nilai keberkesanan. Tema: T1=Penguasaan Sejarah, T2=Murid Berprestasi Rendah, T3=Inkuiri, T4=Adaptive Learning, T5=RAG/AI, T6=Scaffolding, T7=AI Pendidikan, T8=DDR/Model, T9=Penilaian, T10=Sejarah Digital. Jana JSON dengan medan: kod (cth T1001), tema, penulis, tahun, tajuk, jurnal, vol, doi, negara, jenis, pdf (full/part/none), sampel, obj, kaedah, dapatan (array), gap (array jurang dari perspektif MIARS), miars (hubungan dengan MIARS), ayat (satu ayat Bahasa Melayu akademik siap guna dalam tesis), bab, ro, topik (kata kunci pisah dengan |), nota. Keluarkan JSON sahaja.</div>
+    <button class="sb sb-p" style="margin-top:5px" onclick="copyCPrompt()">📋 Salin Arahan</button>
+  </div>
+  <div class="imp-box">
+    <div style="font-size:12px;font-weight:700;color:var(--n);margin-bottom:9px">📥 Tampal JSON dari Claude di sini</div>
+    <div class="imp-steps">
+      <div class="step"><span class="step-n">1</span><div class="step-t">Upload PDF</div><div class="step-d">Upload PDF artikel ke chat Claude</div></div>
+      <div class="step"><span class="step-n">2</span><div class="step-t">Salin Arahan</div><div class="step-d">Salin arahan di atas, tampal ke Claude</div></div>
+      <div class="step"><span class="step-n">3</span><div class="step-t">Salin JSON</div><div class="step-d">Salin JSON yang dihasilkan Claude</div></div>
+      <div class="step"><span class="step-n">4</span><div class="step-t">Import</div><div class="step-d">Tampal di sini, klik Import</div></div>
+    </div>
+    <textarea class="jta" id="jta" placeholder="Tampal JSON dari Claude di sini..."></textarea>
+    <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap">
+      <button class="sb sb-g" onclick="doImportJSON()">📥 Import Artikel</button>
+      <button class="sb" onclick="doValidate()">✓ Semak JSON</button>
+      <button class="sb" onclick="document.getElementById('jta').value='';document.getElementById('ir').style.display='none'">✕ Kosong</button>
+    </div>
+    <div class="ir" id="ir"></div>
+  </div>
+  <div style="background:var(--gr);border-radius:7px;padding:10px 12px;font-size:11px">
+    <b style="color:var(--n)">💡 Format JSON yang dijana Claude:</b><br>
+    Satu artikel: <code>{}</code> &nbsp;|&nbsp; Beberapa artikel: <code>[{},{},{}]</code><br>
+    Selepas import, klik <b>💾 Backup</b> untuk simpan data. Gunakan <b>📂 Import Backup</b> bila buka semula fail ini.
+  </div>
+</div>
+
+<!-- DATABASE -->
+<div class="panel" id="panel-db">
+  <div class="toolbar">
+    <input class="s" id="srch" placeholder="Cari tajuk, penulis, kod..." oninput="rDB()">
+    <select class="f" id="fT" onchange="rDB()"><option value="">Semua tema</option></select>
+    <select class="f" id="fN" onchange="rDB()"><option value="">Semua negara</option><option>Malaysia</option><option>Antarabangsa</option></select>
+    <select class="f" id="fRO" onchange="rDB()"><option value="">Semua RO</option><option>RO1</option><option>RO2</option><option>RO3</option></select>
+    <select class="f" id="fSo" onchange="rDB()"><option value="td">Terbaru</option><option value="tema">Tema</option><option value="kod">Kod</option></select>
+  </div>
+  <div id="detA"></div>
+  <div class="cards" id="cardL"></div>
+</div>
+
+<!-- THESIS MATRIX -->
+<div class="panel" id="panel-tm">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <div style="background:#fff;border-radius:7px;padding:9px 13px;flex:1;min-width:190px;border:1px solid var(--bd)">
+      <div style="font-size:10px;font-weight:700;color:var(--mu);margin-bottom:6px">RO COVERAGE</div>
+      <div id="roc2"></div>
+    </div>
+    <div style="background:#fff;border-radius:7px;padding:9px 13px;flex:1;min-width:190px;border:1px solid var(--bd)">
+      <div style="font-size:10px;font-weight:700;color:var(--mu);margin-bottom:6px">BAB COVERAGE</div>
+      <div id="babc"></div>
+    </div>
+  </div>
+  <div class="osc"><table class="mx" id="tmT"></table></div>
+</div>
+
+<!-- EVIDENCE -->
+<div class="panel" id="panel-ev">
+  <div class="osc"><table class="mx" id="evT"></table></div>
+</div>
+
+<!-- CITATION -->
+<div class="panel" id="panel-cit">
+  <div class="toolbar"><input class="s" id="srchC" placeholder="Cari topik..." oninput="rCit()"></div>
+  <div id="citD"></div>
+</div>
+
+<!-- GAP -->
+<div class="panel" id="panel-gap">
+  <div class="nov"><h3>💡 Novelty MIARS</h3><p>Setakat sorotan literatur yang dijalankan, <b>belum ditemui kajian</b> yang mengintegrasikan pembelajaran inkuiri, pembelajaran adaptif, RAG dan scaffolding berperingkat secara serentak dalam konteks Sejarah KSSM bagi murid Tingkatan 4 berprestasi rendah di Malaysia.</p></div>
+  <div class="toolbar"><select class="f" id="fGT" onchange="rGap()"><option value="">Semua tema</option></select></div>
+  <div id="gapD"></div>
+</div>
+
+<!-- APA -->
+<div class="panel" id="panel-apa">
+  <div class="toolbar">
+    <input class="s" id="srchA" placeholder="Cari rujukan..." oninput="rAPA()">
+    <select class="f" id="fAT" onchange="rAPA()"><option value="">Semua tema</option></select>
+    <button class="sb sb-p" onclick="copyAllAPA()">📋 Salin semua</button>
+    <button class="sb sb-g" onclick="exportAPA()">📄 Muat turun</button>
+  </div>
+  <div id="apaD"></div>
+</div>
+
+<!-- TEMA -->
+<div class="panel" id="panel-theme">
+  <div class="tgrid" id="themeG"></div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editM" style="display:none" class="mov" onclick="if(event.target===this)closeEdit()">
+<div class="mb2">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+    <div class="mt" id="editT">Tambah Artikel</div>
+    <button class="sb" onclick="closeEdit()">✕</button>
+  </div>
+  <div class="fg">
+    <div class="ff"><label>Kod *</label><input id="eK"></div>
+    <div class="ff"><label>Tahun *</label><input id="eY" type="number"></div>
+    <div class="ff full"><label>Tajuk *</label><input id="eTj"></div>
+    <div class="ff full"><label>Penulis (APA)</label><input id="ePn"></div>
+    <div class="ff"><label>Jurnal</label><input id="eJr"></div>
+    <div class="ff"><label>Vol(Isu), ms.</label><input id="eVl"></div>
+    <div class="ff full"><label>DOI</label><input id="eDi"></div>
+    <div class="ff"><label>Negara</label><select id="eNg"><option>Malaysia</option><option>Antarabangsa</option><option>USA</option><option>UK</option><option>Ethiopia</option><option>Indonesia</option><option>Lain-lain</option></select></div>
+    <div class="ff"><label>Tema</label><select id="eTm"></select></div>
+    <div class="ff"><label>Jenis</label><select id="eJn"><option>Kajian Kuantitatif</option><option>Kajian Kualitatif</option><option>Kajian Campuran</option><option>Eksperimen Kuasi</option><option>Meta-analisis</option><option>Sorotan Literatur</option><option>Kajian Kes</option><option>Kertas Konsep</option><option>RCT</option><option>Kajian Tindakan</option></select></div>
+    <div class="ff"><label>Status PDF</label><select id="ePdf"><option value="full">✅ PDF diperoleh</option><option value="part">⚠ Sebahagian</option><option value="none">❌ Tiada PDF</option></select></div>
+    <div class="ff"><label>Sampel</label><input id="eSp"></div>
+    <div class="ff full"><label>Objektif</label><input id="eOb"></div>
+    <div class="ff full"><label>Kaedah</label><input id="eKd"></div>
+    <div class="ff full"><label>Dapatan (pisah |)</label><textarea id="eDp"></textarea></div>
+    <div class="ff full"><label>Gap/Kelemahan (pisah |)</label><textarea id="eGp"></textarea></div>
+    <div class="ff full"><label>Hubungan MIARS</label><textarea id="eMi"></textarea></div>
+    <div class="ff full"><label>Ayat siap pakai tesis</label><textarea id="eAy"></textarea></div>
+    <div class="ff full"><label>Bab (pisah koma)</label><input id="eBb" placeholder="Bab 1, 2.2.3, 2.2.4"></div>
+    <div class="ff full"><label>RO (pisah koma)</label><input id="eRo" placeholder="RO1, RO2, RO3"></div>
+    <div class="ff full"><label>Topik Citation (pisah |)</label><input id="eTop" placeholder="Minat Murid|Gamifikasi|AI"></div>
+    <div class="ff full"><label>Nota</label><textarea id="eNt"></textarea></div>
+  </div>
+  <div class="mft">
+    <button class="sb" onclick="closeEdit()">Batal</button>
+    <button class="sb sb-g" onclick="saveArt()">✓ Simpan</button>
+  </div>
+</div>
+</div>
+
+<!-- ANALYTICS MODAL -->
+<div id="analM" style="display:none" class="mov" onclick="if(event.target===this)closeAnal()">
+<div class="mb2" style="width:min(96%,580px)">
+  <div style="display:flex;justify-content:space-between;margin-bottom:9px">
+    <div class="mt">📊 Analitik MIARS</div>
+    <button class="sb" onclick="closeAnal()">✕</button>
+  </div>
+  <div id="analD"></div>
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+var THEMES = [
+  {k:"T1",n:"Penguasaan Sejarah",s:20,c:"#0F6E56",bg:"#E1F5EE"},
+  {k:"T2",n:"Murid Berprestasi Rendah",s:15,c:"#3C3489",bg:"#EEEDFE"},
+  {k:"T3",n:"Pembelajaran Inkuiri",s:20,c:"#993C1D",bg:"#FAECE7"},
+  {k:"T4",n:"Adaptive Learning",s:20,c:"#185FA5",bg:"#E6F1FB"},
+  {k:"T5",n:"RAG / Generative AI",s:20,c:"#854F0B",bg:"#FAEEDA"},
+  {k:"T6",n:"Scaffolding Berperingkat",s:20,c:"#3B6D11",bg:"#EAF3DE"},
+  {k:"T7",n:"AI dalam Pendidikan",s:15,c:"#0C447C",bg:"#DBEAFE"},
+  {k:"T8",n:"DDR dan Model",s:15,c:"#712B13",bg:"#FAECE7"},
+  {k:"T9",n:"Penilaian Keberkesanan",s:15,c:"#444441",bg:"#F1EFE8"},
+  {k:"T10",n:"Sejarah dan Teknologi",s:20,c:"#085041",bg:"#E1F5EE"}
+];
+var BABS = ["Bab 1","P.Masalah","2.2.1","2.2.2","2.2.3","2.2.4","2.2.5","2.3","2.4","Bab 3","Bab 5"];
+var ROS = ["RO1","RO2","RO3"];
+
+var DB = [
+  {kod:"T1001",tema:"T1",penulis:"Kaviza, M., Ibrahim, C. S., & Che Noh, N.",tahun:2022,tajuk:"Strategi Think Pair Share dalam Mata Pelajaran Sejarah",jurnal:"Malaysian Journal of Social Sciences and Humanities (MJSSH)",vol:"7(10), e001918",doi:"https://doi.org/10.47405/mjssh.v7i10.1918",negara:"Malaysia",jenis:"Kajian Tindakan",pdf:"full",sampel:"Murid T5, SMK Tengku Suleiman, Perlis",obj:"Mengenal pasti sama ada TPS meningkatkan penguasaan esei, minat dan pencapaian Sejarah",kaedah:"Ujian esei, soal selidik minat, temu bual tidak berstruktur",dapatan:["N-Gain lemah 66.51%, sederhana 71.28%, cemerlang 84.03%","Minat tinggi merentas semua kumpulan","Pencapaian meningkat antara ujian pra dan pasca"],gap:["Tiada AI","Tiada RAG","Tiada adaptive learning","Tiada scaffolding digital"],miars:"Menyokong strategi aktif dalam Sejarah; justifikasi keperluan MIARS kerana TPS tiada elemen teknologi adaptif",ayat:"Kaviza et al. (2022) membuktikan bahawa strategi Think Pair Share berkesan meningkatkan penguasaan esei, minat dan pencapaian Sejarah, namun kajian ini tidak mengintegrasikan elemen RAG mahupun scaffolding digital yang menjadi teras Model MIARS.",bab:"Bab 1, P.Masalah, 2.2.1, 2.2.3",ro:"RO1, RO2",topik:"Penguasaan Sejarah|Minat Murid|Strategi Aktif",nota:""},
+  {kod:"T1002",tema:"T1",penulis:"Hassan, N. A., Mohd Salleh, A., Mustafa, Z., Mahfood, S. Z., Awang Jambol, D. J., & Abdullah, M.",tahun:2024,tajuk:"A Pedagogical Paradigm for Enhancing Motivation and Mastery in History Education: Exploring the Efficacy of Ehsond Intervention",jurnal:"Multidisciplinary Science Journal",vol:"6, e2024160",doi:"https://doi.org/10.31893/multiscience.2024160",negara:"Malaysia",jenis:"Kajian Kualitatif",pdf:"full",sampel:"3 murid T4, MRSM Bagan Datuk, Perak",obj:"Meneroka penggunaan Intervensi Ehsond dalam memberi motivasi dan impaknya terhadap penguasaan Sejarah",kaedah:"Pemerhatian, temu bual berstruktur, nota refleksi guru",dapatan:["Motivasi intrinsik murid meningkat selepas intervensi","Pencapaian meningkat dramatik dari F kepada A","Murid lebih aktif dan terlibat dalam kelas"],gap:["Sampel sangat kecil 3 orang","Tiada AI atau RAG","Tiada adaptive learning","Bergantung sepenuhnya kepada guru"],miars:"Mengesahkan keperluan sokongan berperingkat untuk murid T4 lemah; MIARS perluaskan melalui scaffolding digital yang tidak bergantung kepada guru",ayat:"Hassan et al. (2024) mendapati bahawa murid Tingkatan 4 yang berprestasi rendah memerlukan intervensi berperingkat bagi meningkatkan penguasaan Sejarah, namun pendekatan ini masih bergantung sepenuhnya kepada guru dan belum mengintegrasikan teknologi adaptif mahupun RAG seperti dalam MIARS.",bab:"Bab 1, P.Masalah, 2.2.1, 2.2.2",ro:"RO1, RO3",topik:"Penguasaan Sejarah|Murid Berprestasi Rendah|Motivasi",nota:""},
+  {kod:"T10001",tema:"T10",penulis:"Abdul Rahman, A., Shawalludin, S., & Ibrahim, S. F.",tahun:2024,tajuk:"Designing an Interactive Multimedia Learning Tool for Secondary School History Students in Secondary School",jurnal:"International Journal of Research and Innovation in Social Science (IJRISS)",vol:"VIII(X), 955-965",doi:"https://dx.doi.org/10.47772/IJRISS.2024.8100079",negara:"Malaysia",jenis:"Kajian Kuantitatif",pdf:"full",sampel:"71 murid sekolah menengah, Malaysia",obj:"Mengkaji impak multimedia interaktif dan augmented reality terhadap penglibatan murid Sejarah",kaedah:"Soal selidik, statistik deskriptif, Skala Likert",dapatan:["67% murid bersetuju multimedia interaktif meningkatkan minat Sejarah","53.2% bersetuju AR lebih mudah difahami daripada buku teks","86.5% guru masih guna buku teks sebagai kaedah utama"],gap:["Tiada RAG atau AI adaptif","Multimedia bersifat statik","Tiada scaffolding berperingkat","Tiada ujian pra-pasca keberkesanan"],miars:"Mengesahkan penerimaan murid terhadap teknologi digital dalam Sejarah; MIARS melangkah lebih jauh dengan RAG dan adaptif dan scaffolding",ayat:"Abdul Rahman et al. (2024) membuktikan bahawa 67% murid sekolah menengah bersetuju multimedia interaktif meningkatkan minat Sejarah, namun reka bentuk yang dibangunkan masih statik dan belum mengintegrasikan AI adaptif mahupun RAG seperti dalam Model MIARS.",bab:"Bab 1, 2.2.1, 2.2.5, P.Masalah",ro:"RO1",topik:"Sejarah Digital|Multimedia|Teknologi Pendidikan",nota:""}
+];
+
+var editKod = null;
+var openKod = null;
+var curTab = "imp";
+
+function themeOf(k) {
+  for (var i = 0; i < THEMES.length; i++) { if (THEMES[i].k === k) return THEMES[i]; }
+  return THEMES[0];
+}
+function tBadge(tk) {
+  var t = themeOf(tk);
+  return '<span class="tbdg" style="background:' + t.bg + ';color:' + t.c + '">' + t.k + ' ' + t.n.split(" ")[0] + '</span>';
+}
+
+function populateSels() {
+  var ids = ["fT","fGT","fAT","eTm"];
+  for (var i = 0; i < ids.length; i++) {
+    var el = document.getElementById(ids[i]);
+    if (!el) continue;
+    var addAll = ids[i] !== "eTm";
+    var html = addAll ? '<option value="">Semua tema</option>' : '';
+    for (var j = 0; j < THEMES.length; j++) {
+      html += '<option value="' + THEMES[j].k + '">' + THEMES[j].k + ' - ' + THEMES[j].n + '</option>';
+    }
+    el.innerHTML = html;
+  }
+}
+
+function goTab(t) {
+  curTab = t;
+  var tabNames = ["imp","db","tm","ev","cit","gap","apa","theme"];
+  var tabs = document.querySelectorAll(".tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle("on", tabNames[i] === t);
+  }
+  var panels = document.querySelectorAll(".panel");
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove("on");
+  }
+  document.getElementById("panel-" + t).classList.add("on");
+  if (t === "theme") rTheme();
+  if (t === "tm") rTM();
+  if (t === "ev") rEV();
+  if (t === "cit") rCit();
+  if (t === "gap") rGap();
+  if (t === "apa") rAPA();
+  if (t === "db") rDB();
+}
+
+function toast(msg, dur) {
+  dur = dur || 2500;
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(function() { el.classList.remove("show"); }, dur);
+}
+
+function rStats() {
+  var my = 0, full = 0, rec = 0;
+  for (var i = 0; i < DB.length; i++) {
+    if (DB[i].negara === "Malaysia") my++;
+    if (DB[i].pdf === "full") full++;
+    if (DB[i].tahun >= 2022) rec++;
+  }
+  document.getElementById("sbar").innerHTML =
+    '<div class="sv">' + DB.length + '</div><div class="sl">Artikel</div>' +
+    '<div><div class="sv" style="color:#0F6E56">' + my + '</div><div class="sl">Malaysia</div></div>' +
+    '<div><div class="sv" style="color:#185FA5">' + full + '</div><div class="sl">PDF</div></div>' +
+    '<div><div class="sv" style="color:#854F0B">' + rec + '</div><div class="sl">2022-2025</div></div>' +
+    '<div><div class="sv" style="color:' + (DB.length >= 160 ? "#0F6E56" : "#1F4E79") + '">' + Math.round(DB.length / 160 * 100) + '%</div><div class="sl">Sasaran 160</div></div>';
+}
+
+function rDB() {
+  rStats();
+  var q = (document.getElementById("srch") || {}).value || "";
+  q = q.toLowerCase();
+  var ft = document.getElementById("fT") ? document.getElementById("fT").value : "";
+  var fn = document.getElementById("fN") ? document.getElementById("fN").value : "";
+  var fro = document.getElementById("fRO") ? document.getElementById("fRO").value : "";
+  var fs = document.getElementById("fSo") ? document.getElementById("fSo").value : "td";
+  var arr = [];
+  for (var i = 0; i < DB.length; i++) {
+    var a = DB[i];
+    var txt = (a.tajuk + a.penulis + a.kod + (a.dapatan || []).join(" ")).toLowerCase();
+    if (q && txt.indexOf(q) < 0) continue;
+    if (ft && a.tema !== ft) continue;
+    if (fn && a.negara !== fn) continue;
+    if (fro && (a.ro || "").indexOf(fro) < 0) continue;
+    arr.push(a);
+  }
+  arr.sort(function(a, b) {
+    if (fs === "td") return b.tahun - a.tahun;
+    if (fs === "tema") return a.tema < b.tema ? -1 : 1;
+    return a.kod < b.kod ? -1 : 1;
+  });
+  var list = document.getElementById("cardL");
+  if (!arr.length) {
+    list.innerHTML = '<div class="empty">' + (DB.length ? "Tiada artikel ditemui" : "Klik Import AI atau Tambah Manual") + '</div>';
+    return;
+  }
+  var pi = {full:"✅", part:"⚠", none:"❌"};
+  var html = "";
+  for (var i = 0; i < arr.length; i++) {
+    var a = arr[i];
+    var roArr = (a.ro || "").split(",");
+    var roHtml = "";
+    for (var j = 0; j < roArr.length; j++) {
+      var r = roArr[j].trim();
+      if (r) roHtml += '<span class="rpchip">' + r + '</span>';
+    }
+    var gArr = a.gap || [];
+    var gHtml = "";
+    for (var j = 0; j < Math.min(gArr.length, 3); j++) {
+      gHtml += '<span class="gtag">' + gArr[j] + '</span>';
+    }
+    var sel = openKod === a.kod ? " sel" : "";
+    html += '<div class="card' + sel + '" onclick="selArt(\'' + a.kod + '\')">' +
+      '<div class="ctop"><span class="kbdg">' + a.kod + '</span>' + tBadge(a.tema) +
+      '<span class="ybdg">' + a.tahun + '</span>' +
+      '<span class="nbdg ' + (a.negara === "Malaysia" ? "cmy" : "cint") + '">' + (a.negara === "Malaysia" ? "MY" : "INT") + '</span>' +
+      '<span style="font-size:10px">' + (pi[a.pdf] || "?") + '</span>' + roHtml + '</div>' +
+      '<div class="ct">' + (a.tajuk.length > 85 ? a.tajuk.substring(0, 85) + "..." : a.tajuk) + '</div>' +
+      '<div class="ca">' + (a.penulis.length > 65 ? a.penulis.substring(0, 65) + "..." : a.penulis) + '</div>' +
+      '<div class="cfoot"><div class="gtags">' + gHtml + '</div>' +
+      '<div class="cact">' +
+      '<button class="ib" onclick="event.stopPropagation();openEdit(\'' + a.kod + '\')">✏️</button>' +
+      '<button class="ib" onclick="event.stopPropagation();cpAPA(\'' + a.kod + '\')">📋</button>' +
+      '<button class="ib" onclick="event.stopPropagation();delArt(\'' + a.kod + '\')">🗑️</button>' +
+      '</div></div></div>';
+  }
+  list.innerHTML = html;
+}
+
+function selArt(kod) {
+  if (openKod === kod) {
+    openKod = null;
+    document.getElementById("detA").innerHTML = "";
+    rDB();
+    return;
+  }
+  openKod = kod;
+  var a = null;
+  for (var i = 0; i < DB.length; i++) { if (DB[i].kod === kod) { a = DB[i]; break; } }
+  if (!a) return;
+  var babs = (a.bab || "").split(",");
+  var babHtml = "";
+  for (var i = 0; i < babs.length; i++) {
+    var b = babs[i].trim();
+    if (b) babHtml += '<span class="bchip">' + b + '</span>';
+  }
+  var ros = (a.ro || "").split(",");
+  var roHtml = "";
+  for (var i = 0; i < ros.length; i++) {
+    var r = ros[i].trim();
+    if (r) roHtml += '<span class="rpchip">' + r + '</span>';
+  }
+  var dHtml = "";
+  var dArr = a.dapatan || [];
+  for (var i = 0; i < dArr.length; i++) dHtml += '<li>' + dArr[i] + '</li>';
+  var gHtml = "";
+  var gArr = a.gap || [];
+  for (var i = 0; i < gArr.length; i++) gHtml += '<li>' + gArr[i] + '</li>';
+  var pi = {full:"✅ PDF diperoleh", part:"⚠ PDF sebahagian", none:"❌ Tiada PDF"};
+  document.getElementById("detA").innerHTML =
+    '<div class="det">' +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;gap:8px">' +
+    '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center"><span class="kbdg">' + a.kod + '</span>' +
+    tBadge(a.tema) + '<span class="nbdg ' + (a.negara === "Malaysia" ? "cmy" : "cint") + '">' + a.negara + '</span>' +
+    '<span style="font-size:11px">' + (pi[a.pdf] || "?") + '</span></div>' +
+    '<div style="display:flex;gap:3px">' +
+    '<button class="ib" onclick="openEdit(\'' + a.kod + '\')">✏️ Edit</button>' +
+    '<button class="ib" onclick="delArt(\'' + a.kod + '\')">🗑️</button></div></div>' +
+    '<div class="dt">' + a.tajuk + '</div>' +
+    '<div class="da">' + a.penulis + ' (' + a.tahun + ')</div>' +
+    '<div class="dgrid">' +
+    '<div class="df"><label>Jurnal</label><p>' + a.jurnal + (a.vol ? ', ' + a.vol : '') + '</p></div>' +
+    '<div class="df"><label>Jenis Kajian</label><p>' + a.jenis + '</p></div>' +
+    '<div class="df"><label>Sampel</label><p>' + (a.sampel || "-") + '</p></div>' +
+    '<div class="df"><label>Kaedah</label><p>' + (a.kaedah || "-") + '</p></div>' +
+    (a.doi ? '<div class="df" style="grid-column:1/-1"><label>DOI</label><p><a href="' + a.doi + '" target="_blank" style="color:#2E74B5;font-size:10px">' + a.doi + '</a></p></div>' : '') +
+    '</div>' +
+    '<div class="slbl">Dapatan Utama</div><ul class="tl">' + (dHtml || '<li>-</li>') + '</ul>' +
+    '<div class="slbl">Kelemahan / Research Gap</div><ul class="tl xl">' + (gHtml || '<li>-</li>') + '</ul>' +
+    '<div class="slbl">Hubungan dengan MIARS</div>' +
+    '<div class="mb"><div class="ml">MIARS</div><p>' + (a.miars || '-') + '</p></div>' +
+    '<div class="slbl">Ayat siap pakai untuk tesis</div>' +
+    '<div class="qb">' + (a.ayat || '-') + '</div>' +
+    '<div class="cprow">' +
+    '<button class="ib" onclick="cpTxt(\'' + (a.ayat || '').replace(/'/g, "\\'") + '\')">📋 Salin ayat</button>' +
+    '<button class="ib" onclick="cpAPA(\'' + a.kod + '\')">📋 Salin APA</button></div>' +
+    (babHtml ? '<div class="slbl">Digunakan dalam</div><div class="tchip">' + babHtml + '</div>' : '') +
+    (roHtml ? '<div class="slbl">Menyokong</div><div class="tchip">' + roHtml + '</div>' : '') +
+    (a.nota ? '<div class="slbl">Nota Peribadi</div><p style="font-size:11px;color:var(--mu)">' + a.nota + '</p>' : '') +
+    '</div>';
+  rDB();
+  document.getElementById("detA").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function delArt(kod) {
+  if (!confirm("Padam artikel " + kod + "?")) return;
+  DB = DB.filter(function(a) { return a.kod !== kod; });
+  if (openKod === kod) {
+    openKod = null;
+    document.getElementById("detA").innerHTML = "";
+  }
+  rDB();
+  rStats();
+  toast("Dipadam.");
+}
+
+function rTheme() {
+  var html = "";
+  for (var i = 0; i < THEMES.length; i++) {
+    var t = THEMES[i];
+    var n = 0;
+    for (var j = 0; j < DB.length; j++) { if (DB[j].tema === t.k) n++; }
+    var pct = Math.min(100, Math.round(n / t.s * 100));
+    var col = n >= t.s ? "#0F6E56" : n >= Math.floor(t.s * 0.6) ? "#854F0B" : "#A32D2D";
+    html += '<div class="tc">' +
+      '<div class="tc-k">' + t.k + '</div>' +
+      '<div class="tc-n" style="color:' + t.c + '">' + t.n + '</div>' +
+      '<div class="prog"><div class="pf" style="width:' + pct + '%;background:' + col + '"></div></div>' +
+      '<div class="tc-s" style="color:' + col + '">' + n + '/' + t.s + ' ' + (n >= t.s ? "✓" : n > 0 ? "~" : "⚠") + '</div>' +
+      '</div>';
+  }
+  document.getElementById("themeG").innerHTML = html;
+}
+
+function rTM() {
+  var rocEl = document.getElementById("roc2");
+  var babEl = document.getElementById("babc");
+  var rocH = "";
+  for (var i = 0; i < ROS.length; i++) {
+    var ro = ROS[i];
+    var n = 0;
+    for (var j = 0; j < DB.length; j++) { if ((DB[j].ro || "").indexOf(ro) >= 0) n++; }
+    rocH += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">' +
+      '<span class="rpchip">' + ro + '</span>' +
+      '<div style="flex:1;height:5px;background:#e0e0e0;border-radius:3px;overflow:hidden"><div style="width:' + Math.min(100, n * 5) + '%;height:100%;background:#3C3489;border-radius:3px"></div></div>' +
+      '<span style="font-size:10px;color:var(--mu)">' + n + ' artikel</span></div>';
+  }
+  rocEl.innerHTML = rocH;
+  var babH = "";
+  for (var i = 0; i < Math.min(6, BABS.length); i++) {
+    var b = BABS[i];
+    var n = 0;
+    for (var j = 0; j < DB.length; j++) { if ((DB[j].bab || "").indexOf(b) >= 0) n++; }
+    babH += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">' +
+      '<span class="bchip" style="font-size:9px">' + b + '</span>' +
+      '<div style="flex:1;height:5px;background:#e0e0e0;border-radius:3px;overflow:hidden"><div style="width:' + Math.min(100, n * 10) + '%;height:100%;background:#0F6E56;border-radius:3px"></div></div>' +
+      '<span style="font-size:10px;color:var(--mu)">' + n + '</span></div>';
+  }
+  babEl.innerHTML = babH;
+  var t = document.getElementById("tmT");
+  if (!DB.length) { t.innerHTML = '<tr><td style="padding:2rem;text-align:center;color:var(--mu)">Tiada artikel</td></tr>'; return; }
+  var hdr = '<thead><tr><th>Kod</th><th style="min-width:140px">Tajuk</th><th>Tema</th>';
+  for (var i = 0; i < ROS.length; i++) hdr += '<th style="text-align:center;background:#EEEDFE;color:#26215C">' + ROS[i] + '</th>';
+  for (var i = 0; i < BABS.length; i++) hdr += '<th style="text-align:center;min-width:44px;font-size:9px">' + BABS[i] + '</th>';
+  hdr += '</tr></thead>';
+  var rows = "";
+  for (var i = 0; i < DB.length; i++) {
+    var a = DB[i];
+    var ros = (a.ro || "").split(",");
+    var babs = (a.bab || "").split(",");
+    rows += '<tr><td><span class="kbdg">' + a.kod + '</span></td>';
+    rows += '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px" title="' + a.tajuk + '">' + a.tajuk.substring(0, 42) + '...</td>';
+    rows += '<td>' + tBadge(a.tema) + '</td>';
+    for (var j = 0; j < ROS.length; j++) {
+      var has = false;
+      for (var k = 0; k < ros.length; k++) { if (ros[k].trim() === ROS[j]) { has = true; break; } }
+      rows += '<td class="' + (has ? "mc" : "md") + '">' + (has ? "✓" : "·") + '</td>';
+    }
+    for (var j = 0; j < BABS.length; j++) {
+      var has = false;
+      for (var k = 0; k < babs.length; k++) { if (babs[k].trim() === BABS[j]) { has = true; break; } }
+      rows += '<td class="' + (has ? "mc" : "md") + '">' + (has ? "✓" : "·") + '</td>';
+    }
+    rows += '</tr>';
+  }
+  t.innerHTML = hdr + '<tbody>' + rows + '</tbody>';
+}
+
+function rEV() {
+  var t = document.getElementById("evT");
+  if (!DB.length) { t.innerHTML = '<tr><td style="padding:2rem;text-align:center;color:var(--mu)">Tiada artikel</td></tr>'; return; }
+  var hdr = '<thead><tr><th>Kod</th><th>Tajuk</th><th>Tema</th><th>Negara</th><th>Jenis</th>';
+  for (var i = 0; i < BABS.length; i++) hdr += '<th style="text-align:center;min-width:44px;font-size:9px">' + BABS[i] + '</th>';
+  hdr += '</tr></thead>';
+  var rows = "";
+  for (var i = 0; i < DB.length; i++) {
+    var a = DB[i];
+    var babs = (a.bab || "").split(",");
+    rows += '<tr><td><span class="kbdg">' + a.kod + '</span></td>';
+    rows += '<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px">' + a.tajuk.substring(0, 45) + '...</td>';
+    rows += '<td>' + tBadge(a.tema) + '</td>';
+    rows += '<td><span class="nbdg ' + (a.negara === "Malaysia" ? "cmy" : "cint") + '">' + (a.negara === "Malaysia" ? "MY" : "INT") + '</span></td>';
+    rows += '<td style="font-size:10px;color:var(--mu)">' + (a.jenis || "") + '</td>';
+    for (var j = 0; j < BABS.length; j++) {
+      var has = false;
+      for (var k = 0; k < babs.length; k++) { if (babs[k].trim() === BABS[j]) { has = true; break; } }
+      rows += '<td class="' + (has ? "mc" : "md") + '">' + (has ? "✓" : "·") + '</td>';
+    }
+    rows += '</tr>';
+  }
+  t.innerHTML = hdr + '<tbody>' + rows + '</tbody>';
+}
+
+function rCit() {
+  var q = (document.getElementById("srchC") || {}).value || "";
+  q = q.toLowerCase();
+  var div = document.getElementById("citD");
+  if (!DB.length) { div.innerHTML = '<div class="empty">Tiada artikel</div>'; return; }
+  var map = {};
+  for (var i = 0; i < DB.length; i++) {
+    var a = DB[i];
+    var topics = (a.topik || "").split("|");
+    if (!topics[0]) topics = [themeOf(a.tema).n];
+    for (var j = 0; j < topics.length; j++) {
+      var tp = topics[j].trim();
+      if (!tp) continue;
+      if (!map[tp]) map[tp] = [];
+      map[tp].push(a);
+    }
+  }
+  var keys = Object.keys(map).sort();
+  var html = "";
+  for (var i = 0; i < keys.length; i++) {
+    var tp = keys[i];
+    var arts = map[tp];
+    if (q && tp.toLowerCase().indexOf(q) < 0) {
+      var found = false;
+      for (var j = 0; j < arts.length; j++) { if ((arts[j].penulis + arts[j].tajuk).toLowerCase().indexOf(q) >= 0) { found = true; break; } }
+      if (!found) continue;
+    }
+    html += '<div class="ct2"><div class="ch">🏷️ ' + tp + ' <span style="font-size:10px;color:var(--mu)">(' + arts.length + ')</span></div>';
+    for (var j = 0; j < arts.length; j++) {
+      var a = arts[j];
+      var auth = a.penulis.split(",")[0].trim();
+      html += '<div class="ci"><span class="cr">' + auth + ' et al. (' + a.tahun + ') <span class="kbdg" style="font-size:9px">' + a.kod + '</span></span>' +
+        '<button class="ib" onclick="cpTxt(\'' + (a.ayat || buildAPA(a)).replace(/'/g, "\\'") + '\')">📋</button></div>';
+    }
+    html += '</div>';
+  }
+  div.innerHTML = html || '<div class="empty">Tiada topik ditemui</div>';
+}
+
+function rGap() {
+  var ft = document.getElementById("fGT") ? document.getElementById("fGT").value : "";
+  var html = "";
+  for (var i = 0; i < DB.length; i++) {
+    var a = DB[i];
+    if (ft && a.tema !== ft) continue;
+    var gArr = a.gap || [];
+    var gHtml = "";
+    for (var j = 0; j < gArr.length; j++) gHtml += '<span class="gtag">' + gArr[j] + '</span>';
+    html += '<div class="ge">' +
+      '<div style="min-width:66px"><span class="kbdg">' + a.kod + '</span><br><span class="nbdg ' + (a.negara === "Malaysia" ? "cmy" : "cint") + '" style="font-size:9px;margin-top:3px;display:inline-block">' + (a.negara === "Malaysia" ? "MY" : "INT") + '</span></div>' +
+      '<div style="flex:1"><div class="ge-t">' + a.tajuk.substring(0, 65) + (a.tajuk.length > 65 ? "..." : "") + '</div>' +
+      '<div class="gtags" style="margin:3px 0">' + gHtml + '</div>' +
+      '<div class="ge-m">→ ' + (a.miars || "") + '</div></div></div>';
+  }
+  document.getElementById("gapD").innerHTML = html || '<div class="empty">Tiada artikel</div>';
+}
+
+function buildAPA(a) {
+  return a.penulis + ' (' + a.tahun + '). ' + a.tajuk + '. ' + a.jurnal + (a.vol ? ', ' + a.vol : '') + '.' + (a.doi ? ' ' + a.doi : '');
+}
+
+function rAPA() {
+  var q = (document.getElementById("srchA") || {}).value || "";
+  q = q.toLowerCase();
+  var ft = document.getElementById("fAT") ? document.getElementById("fAT").value : "";
+  var sorted = DB.slice().sort(function(a, b) { return a.penulis < b.penulis ? -1 : 1; });
+  var html = "";
+  var n = 0;
+  for (var i = 0; i < sorted.length; i++) {
+    var a = sorted[i];
+    if (ft && a.tema !== ft) continue;
+    if (q && (a.penulis + a.tajuk).toLowerCase().indexOf(q) < 0) continue;
+    n++;
+    html += '<div class="ae"><div class="an">' + n + '.</div><div class="at">' + buildAPA(a) + '</div>' +
+      '<button class="ib" onclick="cpAPA(\'' + a.kod + '\')">📋</button></div>';
+  }
+  document.getElementById("apaD").innerHTML = html || '<div class="empty">Tiada rujukan</div>';
+}
+
+function openEdit(kod, prefill) {
+  editKod = kod;
+  document.getElementById("editT").textContent = kod ? "Edit Artikel" : "Tambah Artikel Baharu";
+  var a = null;
+  if (kod) {
+    for (var i = 0; i < DB.length; i++) { if (DB[i].kod === kod) { a = DB[i]; break; } }
+  } else if (prefill) {
+    a = prefill;
+  }
+  document.getElementById("eK").value = a ? a.kod || "" : "";
+  document.getElementById("eY").value = a ? a.tahun || 2024 : 2024;
+  document.getElementById("eTj").value = a ? a.tajuk || "" : "";
+  document.getElementById("ePn").value = a ? a.penulis || "" : "";
+  document.getElementById("eJr").value = a ? a.jurnal || "" : "";
+  document.getElementById("eVl").value = a ? a.vol || "" : "";
+  document.getElementById("eDi").value = a ? a.doi || "" : "";
+  document.getElementById("eNg").value = a ? a.negara || "Malaysia" : "Malaysia";
+  document.getElementById("eTm").value = a ? a.tema || "T1" : "T1";
+  document.getElementById("eJn").value = a ? a.jenis || "Kajian Kuantitatif" : "Kajian Kuantitatif";
+  document.getElementById("ePdf").value = a ? a.pdf || "none" : "none";
+  document.getElementById("eSp").value = a ? a.sampel || "" : "";
+  document.getElementById("eOb").value = a ? a.obj || "" : "";
+  document.getElementById("eKd").value = a ? a.kaedah || "" : "";
+  document.getElementById("eDp").value = a ? (a.dapatan || []).join(" | ") : "";
+  document.getElementById("eGp").value = a ? (a.gap || []).join(" | ") : "";
+  document.getElementById("eMi").value = a ? a.miars || "" : "";
+  document.getElementById("eAy").value = a ? a.ayat || "" : "";
+  document.getElementById("eBb").value = a ? a.bab || "" : "";
+  document.getElementById("eRo").value = a ? a.ro || "" : "";
+  document.getElementById("eTop").value = a ? a.topik || "" : "";
+  document.getElementById("eNt").value = a ? a.nota || "" : "";
+  document.getElementById("editM").style.display = "flex";
+}
+
+function closeEdit() { document.getElementById("editM").style.display = "none"; editKod = null; }
+
+function saveArt() {
+  var kod = document.getElementById("eK").value.trim().toUpperCase();
+  if (!kod) { toast("Kod diperlukan"); return; }
+  if (!editKod) {
+    for (var i = 0; i < DB.length; i++) { if (DB[i].kod === kod) { toast("Kod " + kod + " sudah wujud"); return; } }
+  }
+  var art = {
+    kod: kod,
+    tahun: parseInt(document.getElementById("eY").value) || 2024,
+    tajuk: document.getElementById("eTj").value,
+    penulis: document.getElementById("ePn").value,
+    jurnal: document.getElementById("eJr").value,
+    vol: document.getElementById("eVl").value,
+    doi: document.getElementById("eDi").value,
+    negara: document.getElementById("eNg").value,
+    tema: document.getElementById("eTm").value,
+    jenis: document.getElementById("eJn").value,
+    pdf: document.getElementById("ePdf").value,
+    sampel: document.getElementById("eSp").value,
+    obj: document.getElementById("eOb").value,
+    kaedah: document.getElementById("eKd").value,
+    dapatan: document.getElementById("eDp").value.split("|").map(function(s) { return s.trim(); }).filter(Boolean),
+    gap: document.getElementById("eGp").value.split("|").map(function(s) { return s.trim(); }).filter(Boolean),
+    miars: document.getElementById("eMi").value,
+    ayat: document.getElementById("eAy").value,
+    bab: document.getElementById("eBb").value,
+    ro: document.getElementById("eRo").value,
+    topik: document.getElementById("eTop").value,
+    nota: document.getElementById("eNt").value
+  };
+  if (editKod) {
+    for (var i = 0; i < DB.length; i++) { if (DB[i].kod === editKod) { DB[i] = art; break; } }
+  } else {
+    DB.push(art);
+  }
+  closeEdit();
+  openKod = null;
+  document.getElementById("detA").innerHTML = "";
+  rDB();
+  rStats();
+  toast("✓ " + kod + " disimpan! Klik Backup untuk simpan data.");
+}
+
+function cpAPA(kod) {
+  var a = null;
+  for (var i = 0; i < DB.length; i++) { if (DB[i].kod === kod) { a = DB[i]; break; } }
+  if (!a) return;
+  cpTxt(buildAPA(a));
+}
+
+function copyAllAPA() {
+  var sorted = DB.slice().sort(function(a, b) { return a.penulis < b.penulis ? -1 : 1; });
+  var lines = [];
+  for (var i = 0; i < sorted.length; i++) lines.push((i + 1) + ". " + buildAPA(sorted[i]));
+  cpTxt(lines.join("\n\n"));
+  toast("✓ " + sorted.length + " rujukan disalin!");
+}
+
+function cpTxt(t) {
+  if (!t) return;
+  var clean = t.replace(/<[^>]+>/g, "");
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(clean).then(function() { toast("✓ Disalin!"); }).catch(function() { toast("Salin manual"); });
+  } else { toast("Salin manual"); }
+}
+
+function exportAPA() {
+  var hdr = "TAJUK KAJIAN:\nPEMBANGUNAN DAN PENILAIAN MODEL PEMBELAJARAN INKUIRI ADAPTIF BERASASKAN RAG DAN SOKONGAN BERPERINGKAT TERHADAP PENGUASAAN SEJARAH MURID\n\nSENARAI RUJUKAN APA 7 - MIARS\n" + "=".repeat(50) + "\n\n";
+  var sorted = DB.slice().sort(function(a, b) { return a.penulis < b.penulis ? -1 : 1; });
+  var lines = [];
+  for (var i = 0; i < sorted.length; i++) lines.push((i + 1) + ". " + buildAPA(sorted[i]));
+  var blob = new Blob([hdr + lines.join("\n\n")], {type: "text/plain;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var el = document.createElement("a");
+  el.href = url; el.download = "MIARS_APA_Bank.txt"; el.click();
+  URL.revokeObjectURL(url);
+  toast("✓ APA Bank dimuat turun!");
+}
+
+function exportJSON() {
+  var data = {tajuk:"MIARS", database: DB, exported: new Date().toISOString()};
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+  var url = URL.createObjectURL(blob);
+  var el = document.createElement("a");
+  el.href = url; el.download = "MIARS_Backup.json"; el.click();
+  URL.revokeObjectURL(url);
+  toast("✓ Backup disimpan!");
+}
+
+function loadBackup(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (data.database && Array.isArray(data.database)) {
+        DB = data.database;
+        rDB(); rStats();
+        toast("✓ " + DB.length + " artikel diimport dari backup!");
+      } else { toast("Format backup tidak dikenali"); }
+    } catch(err) { toast("Fail JSON tidak sah"); }
+  };
+  reader.readAsText(file);
+  input.value = "";
+}
+
+function doImportJSON() {
+  var raw = document.getElementById("jta").value.trim();
+  if (!raw) { showIR("Kotak JSON kosong", "err"); return; }
+  try {
+    var data = JSON.parse(raw);
+    if (!Array.isArray(data)) data = [data];
+    var added = 0, skipped = 0, errs = [];
+    for (var i = 0; i < data.length; i++) {
+      var a = data[i];
+      if (!a.kod || !a.tajuk) { errs.push("Item " + (i + 1) + ": tiada kod/tajuk"); continue; }
+      var kod = a.kod.trim().toUpperCase();
+      var exists = false;
+      for (var j = 0; j < DB.length; j++) { if (DB[j].kod === kod) { exists = true; break; } }
+      if (exists) { skipped++; continue; }
+      DB.push({
+        kod: kod, tema: a.tema || "T1", penulis: a.penulis || "", tahun: parseInt(a.tahun) || 2024,
+        tajuk: a.tajuk || "", jurnal: a.jurnal || "", vol: a.vol || "", doi: a.doi || "",
+        negara: a.negara || "Malaysia", jenis: a.jenis || "Kajian Kuantitatif",
+        pdf: a.pdf || "none", sampel: a.sampel || "", obj: a.obj || "", kaedah: a.kaedah || "",
+        dapatan: Array.isArray(a.dapatan) ? a.dapatan : (a.dapatan || "").split("|").map(function(s) { return s.trim(); }).filter(Boolean),
+        gap: Array.isArray(a.gap) ? a.gap : (a.gap || "").split("|").map(function(s) { return s.trim(); }).filter(Boolean),
+        miars: a.miars || "", ayat: a.ayat || "", bab: a.bab || "", ro: a.ro || "",
+        topik: a.topik || "", nota: a.nota || ""
+      });
+      added++;
+    }
+    var msg = "✓ " + added + " artikel berjaya diimport!";
+    if (skipped) msg += " (" + skipped + " kod sudah wujud)";
+    if (errs.length) msg += "\n⚠ " + errs.join("; ");
+    showIR(msg, added > 0 ? "ok" : "err");
+    if (added > 0) {
+      rDB(); rStats();
+      document.getElementById("jta").value = "";
+      toast("✓ " + added + " artikel masuk database! Klik Backup untuk simpan.");
+    }
+  } catch(e) {
+    showIR("✗ JSON tidak sah: " + e.message + "\n\nPastikan format betul. Cuba Semak JSON dahulu.", "err");
+  }
+}
+
+function doValidate() {
+  var raw = document.getElementById("jta").value.trim();
+  if (!raw) { showIR("Kotak JSON kosong", "err"); return; }
+  try {
+    var data = JSON.parse(raw);
+    if (!Array.isArray(data)) data = [data];
+    var issues = [];
+    for (var i = 0; i < data.length; i++) {
+      var a = data[i];
+      var fields = ["kod","tema","penulis","tahun","tajuk"];
+      for (var j = 0; j < fields.length; j++) {
+        if (!a[fields[j]]) issues.push("Item " + (i + 1) + ": medan '" + fields[j] + "' kosong");
+      }
+    }
+    if (issues.length) showIR("⚠ JSON sah tapi ada medan kosong:\n" + issues.join("\n"), "err");
+    else showIR("✓ JSON sah! " + data.length + " artikel sedia diimport.", "ok");
+  } catch(e) {
+    showIR("✗ JSON TIDAK SAH: " + e.message, "err");
+  }
+}
+
+function showIR(msg, type) {
+  var el = document.getElementById("ir");
+  el.textContent = msg;
+  el.className = "ir " + type;
+  el.style.display = "block";
+}
+
+function copyCPrompt() {
+  var t = document.getElementById("claudePrompt").textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(function() { toast("✓ Arahan Claude disalin! Buka chat Claude, upload PDF, tampal arahan ini."); });
+  }
+}
+
+function openAnal() {
+  var total = DB.length;
+  var my = 0;
+  for (var i = 0; i < DB.length; i++) { if (DB[i].negara === "Malaysia") my++; }
+  var html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  html += '<div style="background:var(--gr);border-radius:7px;padding:10px 12px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--mu);margin-bottom:7px">KEMAJUAN 10 TEMA</div>';
+  for (var i = 0; i < THEMES.length; i++) {
+    var t = THEMES[i];
+    var n = 0;
+    for (var j = 0; j < DB.length; j++) { if (DB[j].tema === t.k) n++; }
+    var pct = Math.min(100, Math.round(n / t.s * 100));
+    var col = n >= t.s ? "#0F6E56" : n > 0 ? "#854F0B" : "#A32D2D";
+    html += '<div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">' +
+      '<span style="font-size:9px;min-width:24px;color:var(--mu)">' + t.k + '</span>' +
+      '<div style="flex:1;height:5px;background:#ddd;border-radius:3px;overflow:hidden"><div style="width:' + pct + '%;height:100%;border-radius:3px;background:' + col + '"></div></div>' +
+      '<span style="font-size:10px;color:' + col + ';min-width:30px;text-align:right">' + n + '/' + t.s + '</span></div>';
+  }
+  html += '</div>';
+  html += '<div style="background:var(--gr);border-radius:7px;padding:10px 12px">';
+  html += '<div style="text-align:center;margin-bottom:9px">';
+  html += '<div style="font-size:26px;font-weight:700;color:var(--n)">' + total + '<span style="font-size:12px;color:var(--mu);margin-left:4px">/ 160</span></div>';
+  html += '<div style="height:6px;background:#ddd;border-radius:3px;margin:4px 0;overflow:hidden"><div style="width:' + Math.min(100, Math.round(total / 160 * 100)) + '%;height:100%;border-radius:3px;background:var(--n)"></div></div>';
+  html += '<div style="font-size:10px;color:var(--mu)">' + Math.round(total / 160 * 100) + '% sasaran 160 artikel tercapai</div></div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px">';
+  html += '<div style="text-align:center;padding:6px;background:#fff;border-radius:5px"><div style="font-size:15px;font-weight:700;color:#0F6E56">' + my + '</div><div style="font-size:10px;color:var(--mu)">Malaysia</div></div>';
+  html += '<div style="text-align:center;padding:6px;background:#fff;border-radius:5px"><div style="font-size:15px;font-weight:700;color:#185FA5">' + (total - my) + '</div><div style="font-size:10px;color:var(--mu)">Antarabangsa</div></div>';
+  html += '</div>';
+  for (var i = 0; i < ROS.length; i++) {
+    var ro = ROS[i];
+    var n = 0;
+    for (var j = 0; j < DB.length; j++) { if ((DB[j].ro || "").indexOf(ro) >= 0) n++; }
+    html += '<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px"><span class="rpchip">' + ro + '</span><div style="flex:1;height:4px;background:#ddd;border-radius:2px;overflow:hidden"><div style="width:' + Math.min(100, n * 5) + '%;height:100%;background:#3C3489;border-radius:2px"></div></div><span style="font-size:10px;color:var(--mu)">' + n + '</span></div>';
+  }
+  var note = total === 0 ? "Mula tambah artikel" : (my / Math.max(total, 1) < 0.3 ? "⚠ Artikel Malaysia kurang 30%" : "✓ Kemajuan baik!");
+  var notecol = (total > 0 && my / Math.max(total, 1) < 0.3) ? "var(--lr)" : "var(--lg)";
+  var notefg = (total > 0 && my / Math.max(total, 1) < 0.3) ? "var(--r)" : "var(--dg)";
+  html += '<div style="margin-top:6px;padding:6px 8px;background:' + notecol + ';border-radius:5px;font-size:10px;color:' + notefg + '">' + note + '</div>';
+  html += '</div></div>';
+  document.getElementById("analD").innerHTML = html;
+  document.getElementById("analM").style.display = "flex";
+}
+function closeAnal() { document.getElementById("analM").style.display = "none"; }
+
+populateSels();
+rStats();
+</script>
+</body>
+</html>
