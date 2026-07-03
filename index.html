@@ -147,7 +147,6 @@ table.mx tr:hover td{background:#fafafa}
 .bw-kod{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;background:var(--n);color:#fff;white-space:nowrap}
 .bw-t{flex:1;line-height:1.4}
 .bw-a{font-size:10px;color:var(--mu)}
-.bw-empty{font-size:11px;color:var(--mu);padding:8px 0;text-align:center}
 .star{color:#F59E0B;font-size:11px}
 @media(max-width:600px){.dgrid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.ff.full{grid-column:1}}
 </style>
@@ -474,7 +473,6 @@ table.mx tr:hover td{background:#fafafa}
     var data = JSON.parse(e.postData.contents);
     var articles = data.articles || [];
 
-    // Sheet 1: Database
     var sheet = ss.getSheetByName("Database") || ss.insertSheet("Database");
     sheet.clearContents();
 
@@ -501,7 +499,6 @@ table.mx tr:hover td{background:#fafafa}
       sheet.autoResizeColumns(1, headers.length);
     }
 
-    // Sheet 2: Summary
     var sum = ss.getSheetByName("Summary") || ss.insertSheet("Summary");
     sum.clearContents();
     sum.getRange("A1").setValue("MIARS Literature Database Summary");
@@ -690,10 +687,10 @@ function rDB(){
   var list=document.getElementById("cardL");
   if(!arr.length){list.innerHTML='<div class="empty">'+(DB.length?"Tiada artikel ditemui":"Klik Import AI atau Tambah untuk mula")+'</div>';return;}
   var pi={full:"✅",part:"⚠",none:"❌"};
-    var gdHtml=a.gdrive?'<a class="gd-btn" href="'+a.gdrive+'" target="_blank" onclick="event.stopPropagation()">📄 PDF</a>':"";
   var html="";
   for(var i=0;i<arr.length;i++){
     var a=arr[i];
+    var gdHtml=a.gdrive?'<a class="gd-btn" href="'+a.gdrive+'" target="_blank" onclick="event.stopPropagation()">📄 PDF</a>':"";
     var roArr=(a.ro||"").split(",");var roHtml="";
     for(var j=0;j<roArr.length;j++){var r=roArr[j].trim();if(r)roHtml+='<span class="rpchip">'+r+'</span>';}
     var gArr=a.gap||[];var gHtml="";
@@ -798,10 +795,8 @@ function rBW(){
     groups[th].push(arr[i]);
   }
   var html='<div style="font-size:11px;color:var(--mu);margin-bottom:8px">'+arr.length+' artikel untuk <b>'+bab+'</b></div>';
-  var gnames=sort==="tahap"?["WAJIB","SOKONGAN","KONTEKS","Lain"]:["Lain"];
-  if(sort!=="tahap"){for(var i=0;i<arr.length;i++)groups["Lain"].push(arr[i]);groups["Lain"]=arr;}
+  if(sort!=="tahap"){groups["Lain"]=arr;}
   var cols={WAJIB:"#0F6E56",SOKONGAN:"#185FA5",KONTEKS:"#854F0B",Lain:"#444"};
-  var bgs={WAJIB:"#E1F5EE",SOKONGAN:"#E6F1FB",KONTEKS:"#FAEEDA",Lain:"#f5f5f5"};
   var gkeys=sort==="tahap"?["WAJIB","SOKONGAN","KONTEKS","Lain"]:["Lain"];
   for(var g=0;g<gkeys.length;g++){
     var gk=gkeys[g];var garr=groups[gk];if(!garr||!garr.length)continue;
@@ -1166,8 +1161,6 @@ function openAnal(){
 }
 function closeAnal(){document.getElementById("analM").style.display="none";}
 
-
-
 var SYN_KOMPONEN = [
   {k:"ai",     label:"AI / Gen AI"},
   {k:"rag",    label:"RAG"},
@@ -1180,7 +1173,6 @@ var SYN_KOMPONEN = [
 
 function detectKomp(a) {
   var t = (a.tajuk+" "+(a.topik||"")+" "+(a.tema||"")).toLowerCase();
-  var bab = (a.bab||"").toLowerCase();
   var res = {};
   res.ai      = /ai|artificial|generative|llm|chatgpt|gpt/.test(t) || a.tema==="T7" || a.tema==="T5";
   res.rag     = /rag|retrieval.augment|retrieval augment/.test(t) || a.tema==="T5";
@@ -1244,14 +1236,12 @@ function buildCompareTable(arr, bab) {
       if(komp[k]) html += '<td class="syn-tick">✓</td>';
       else html += '<td class="syn-cross">✗</td>';
     }
-    // Sumbangan/Jurang
     var gap = (a.gap||[]).slice(0,2).join("; ");
     var miars = a.miars ? a.miars.substring(0,120)+(a.miars.length>120?"...":"") : gap || "—";
     html += '<td>'+miars+'</td></tr>';
   }
   html += '</tbody></table></div>';
   
-  // Rumusan
   var aiCount=0,ragCount=0,inkuiriCount=0,scaffoldCount=0,adaptifCount=0,sejarahCount=0,myCount=0;
   for(var i=0;i<arr.length;i++){
     var k=detectKomp(arr[i]);
@@ -1276,7 +1266,6 @@ function buildSynthesisTable(arr, bab) {
   var html = '<div class="syn-title">Jadual Sintesis Kajian — ' + label + '</div>';
   html += '<div class="syn-caption">Rumusan kajian mengikut kumpulan tema, dapatan dan implikasi kepada MIARS</div>';
   
-  // Kumpul mengikut tema
   var themeGroups = {};
   for(var i=0;i<arr.length;i++){
     var t = arr[i].tema||"Lain";
@@ -1308,13 +1297,11 @@ function buildSynthesisTable(arr, bab) {
       html += '<td><b>'+shortAuthor(a.penulis,a.tahun)+'</b><br>';
       html += '<span style="font-size:10px;color:#666">'+(a.negara||"")+(a.quartile?" · "+a.quartile:"")+'</span></td>';
       
-      // Dapatan utama - ambil yang pertama atau dua
       var dapatan = (a.dapatan||[]).slice(0,2);
       var dStr = dapatan.length ? dapatan.join("; ") : "—";
       if(dStr.length > 150) dStr = dStr.substring(0,150)+"...";
       html += '<td>'+dStr+'</td>';
       
-      // Implikasi kepada MIARS
       var impl = a.miars || (a.gap||[]).slice(0,1).join("; ") || "—";
       if(impl.length > 150) impl = impl.substring(0,150)+"...";
       html += '<td>'+impl+'</td>';
@@ -1324,7 +1311,6 @@ function buildSynthesisTable(arr, bab) {
   }
   html += '</tbody></table></div>';
   
-  // Cadangan ayat sintesis auto
   html += '<div style="background:#E1F5EE;border-radius:6px;padding:9px 12px;margin-top:8px;font-size:11px;border-left:3px solid #0F6E56">';
   html += '<b style="color:#0F6E56">💡 Cadangan ayat sintesis untuk tesis:</b><br>';
   html += 'Berdasarkan sorotan '+arr.length+' kajian yang relevan, didapati bahawa kajian-kajian tersebut membincangkan pelbagai aspek berkaitan '+label+', ';
@@ -1354,10 +1340,6 @@ function exportSynWord() {
   toast("✓ Disimpan sebagai TXT!");
 }
 
-
-// ═══════════════════════════════════════════════
-// AUTO-SAVE localStorage
-// ═══════════════════════════════════════════════
 var LS_KEY = "miars_db_v1";
 var LS_META = "miars_meta_v1";
 
@@ -1437,10 +1419,6 @@ function lsInfo() {
   } catch(e) { return "Ralat"; }
 }
 
-
-// ═══════════════════════════════════════════════
-// GOOGLE SHEETS SYNC
-// ═══════════════════════════════════════════════
 var GAS_URL_KEY = "miars_gas_url";
 
 function showSyncModal() {
@@ -1514,7 +1492,7 @@ function doSync() {
   var payload = { articles: DB, syncTime: new Date().toISOString() };
   fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(payload)
   })
   .then(function(r){ return r.json(); })
@@ -1544,7 +1522,6 @@ function cpAyat(kod){
   cpTxt(t);
 }
 populateSels();
-// AUTO-LOAD dari localStorage
 if(lsLoad()) {
   rDB();
   rStats();
