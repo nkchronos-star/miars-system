@@ -232,7 +232,7 @@ table.mx tr:hover td{background:#fafafa}
     <select class="f" id="fRO" onchange="rDB()"><option value="">Semua RO</option><option>RO1</option><option>RO2</option><option>RO3</option></select>
     <select class="f" id="fQ" onchange="rDB()"><option value="">Semua quartile</option><option>Q1</option><option>Q2</option><option>Q3</option><option>Scopus</option><option>WoS</option><option>preprint</option></select>
     <select class="f" id="fTh" onchange="rDB()"><option value="">Semua tahap</option><option>WAJIB</option><option>SOKONGAN</option><option>KONTEKS</option></select>
-    <select class="f" id="fSo" onchange="rDB()"><option value="td">Terbaru</option><option value="tema">Tema</option><option value="kod">Kod</option></select>
+    <select class="f" id="fSo" onchange="rDB()"><option value="td">Terbaru</option><option value="tema">Tema</option><option value="kod">Kod</option><option value="prior">Keutamaan Bacaan</option></select>
   </div>
   <div id="detA"></div>
   <div class="cards" id="cardL"></div>
@@ -382,6 +382,11 @@ table.mx tr:hover td{background:#fafafa}
     <div class="ff"><label>Moderator</label><input id="eMod" placeholder="Scaffolding"></div>
     <div class="ff full"><label>Objektif</label><input id="eOb"></div>
     <div class="ff full"><label>Kaedah</label><input id="eKd"></div>
+    <div class="ff full"><label>Instrumen Kajian</label><input id="eInstr" placeholder="cth: Soal selidik 30 item, temu bual separa berstruktur"></div>
+    <div class="ff full"><label>Kaedah Analisis</label><input id="eAnal" placeholder="cth: Korelasi Pearson, SEM, Analisis Tematik"></div>
+    <div class="ff"><label>Penerbit</label><input id="ePub" placeholder="cth: Sasbadi, Elsevier, KPM"></div>
+    <div class="ff"><label>Bahasa</label><select id="eLang"><option>BM</option><option>EN</option><option>Lain-lain</option></select></div>
+    <div class="ff"><label>Keutamaan Bacaan (1-5)</label><select id="ePrior"><option value="">-</option><option value="1">1 - Rendah</option><option value="2">2</option><option value="3">3 - Sederhana</option><option value="4">4</option><option value="5">5 - Tinggi</option></select></div>
     <div class="ff full"><label>Dapatan (pisah |)</label><textarea id="eDp"></textarea></div>
     <div class="ff full"><label>Gap/Kelemahan (pisah |)</label><textarea id="eGp"></textarea></div>
     <div class="ff full"><label>Hubungan MIARS</label><textarea id="eMi"></textarea></div>
@@ -690,7 +695,7 @@ function rDB(){
     if(fth&&a.tahapArtikel!==fth)continue;
     arr.push(a);
   }
-  arr.sort(function(a,b){if(fs==="td")return b.tahun-a.tahun;if(fs==="tema")return a.tema<b.tema?-1:1;return a.kod<b.kod?-1:1;});
+  arr.sort(function(a,b){if(fs==="td")return b.tahun-a.tahun;if(fs==="tema")return a.tema<b.tema?-1:1;if(fs==="prior")return (b.priority||0)-(a.priority||0);return a.kod<b.kod?-1:1;});
   var list=document.getElementById("cardL");
   if(!arr.length){list.innerHTML='<div class="empty">'+(DB.length?"Tiada artikel ditemui":"Klik Import AI atau Tambah untuk mula")+'</div>';return;}
   var pi={full:"✅",part:"⚠",none:"❌"};
@@ -761,6 +766,10 @@ function selArt(kod){
     '<div class="df"><label>Jenis Kajian</label><p>'+a.jenis+'</p></div>'+
     '<div class="df"><label>Sampel</label><p>'+(a.sampel||"-")+'</p></div>'+
     '<div class="df"><label>Kaedah</label><p>'+(a.kaedah||"-")+'</p></div>'+
+    (a.instrument?'<div class="df"><label>Instrumen</label><p>'+a.instrument+'</p></div>':"")+
+    (a.analysis?'<div class="df"><label>Kaedah Analisis</label><p>'+a.analysis+'</p></div>':"")+
+    (a.publisher?'<div class="df"><label>Penerbit</label><p>'+a.publisher+'</p></div>':"")+
+    '<div class="df"><label>Bahasa</label><p>'+(a.language||"BM")+(a.priority?' &nbsp;·&nbsp; ⭐ Keutamaan: '+a.priority+'/5':'')+'</p></div>'+
     (a.doi?'<div class="df" style="grid-column:1/-1"><label>DOI</label><p><a href="'+a.doi+'" target="_blank" style="color:#2E74B5;font-size:10px">'+a.doi+'</a></p></div>':"")+
     '</div>'+
     (teoriHtml?'<div class="slbl">Teori Asas</div><div class="tchip">'+teoriHtml+'</div>':"")+
@@ -1022,6 +1031,11 @@ function openEdit(kod,prefill){
   document.getElementById("eMod").value=a?a.moderator||"":"";
   document.getElementById("eOb").value=a?a.obj||"":"";
   document.getElementById("eKd").value=a?a.kaedah||"":"";
+  document.getElementById("eInstr").value=a?a.instrument||"":"";
+  document.getElementById("eAnal").value=a?a.analysis||"":"";
+  document.getElementById("ePub").value=a?a.publisher||"":"";
+  document.getElementById("eLang").value=a?a.language||"BM":"BM";
+  document.getElementById("ePrior").value=a?a.priority||"":"";
   document.getElementById("eDp").value=a?(a.dapatan||[]).join(" | "):"";
   document.getElementById("eGp").value=a?(a.gap||[]).join(" | "):"";
   document.getElementById("eMi").value=a?a.miars||"":"";
@@ -1053,6 +1067,9 @@ function saveArt(){
     dv:document.getElementById("eDV").value,iv:document.getElementById("eIV").value,
     mediator:document.getElementById("eMed").value,moderator:document.getElementById("eMod").value,
     obj:document.getElementById("eOb").value,kaedah:document.getElementById("eKd").value,
+    instrument:document.getElementById("eInstr").value,analysis:document.getElementById("eAnal").value,
+    publisher:document.getElementById("ePub").value,language:document.getElementById("eLang").value,
+    priority:document.getElementById("ePrior").value?parseInt(document.getElementById("ePrior").value):"",
     dapatan:document.getElementById("eDp").value.split("|").map(function(s){return s.trim();}).filter(Boolean),
     gap:document.getElementById("eGp").value.split("|").map(function(s){return s.trim();}).filter(Boolean),
     miars:document.getElementById("eMi").value,ayat:document.getElementById("eAy").value,
@@ -1120,6 +1137,9 @@ function doImportJSON(){
         teori:Array.isArray(a.teori)?a.teori:(a.teori||"").split("|").map(function(s){return s.trim();}).filter(Boolean),
         dv:a.dv||"",iv:a.iv||"",mediator:a.mediator||"",moderator:a.moderator||"",
         obj:a.obj||"",kaedah:a.kaedah||"",
+        instrument:a.instrument||"",analysis:a.analysis||"",
+        publisher:a.publisher||"",language:a.language||"BM",
+        priority:a.priority?parseInt(a.priority):"",
         dapatan:Array.isArray(a.dapatan)?a.dapatan:(a.dapatan||"").split("|").map(function(s){return s.trim();}).filter(Boolean),
         gap:Array.isArray(a.gap)?a.gap:(a.gap||"").split("|").map(function(s){return s.trim();}).filter(Boolean),
         miars:a.miars||"",ayat:a.ayat||"",bab:a.bab||"",ro:a.ro||"",
