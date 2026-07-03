@@ -92,7 +92,7 @@ select.f{padding:5px 7px;font-size:11px;border:1px solid var(--bd);border-radius
 .pf{height:100%;border-radius:3px}
 .tc-s{font-size:10px}
 table.mx{border-collapse:collapse;font-size:11px;width:100%}
-table.mx th{padding:5px 6px;border-bottom:1px solid var(--bd);color:var(--mu);font-weight:700;white-space:nowrap;background:var(--gr);text-align:left;position:sticky;top:80px}
+table.mx th{padding:5px 6px;border-bottom:1px solid var(--bd);color:var(--mu);font-weight:700;white-space:nowrap;background:var(--gr);text-align:left}
 table.mx td{padding:4px 6px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 table.mx tr:hover td{background:#fafafa}
 .mc{color:var(--g);text-align:center;font-weight:700}.md{color:#ddd;text-align:center}
@@ -226,6 +226,7 @@ table.mx tr:hover td{background:#fafafa}
 <div class="panel" id="panel-db">
   <div class="toolbar">
     <input class="s" id="srch" placeholder="Cari tajuk, penulis, kod..." oninput="rDB()">
+    <select class="f" id="fKat" onchange="rDB()"><option value="">Semua kategori</option><option>Artikel Jurnal</option><option>Dasar/Dokumen Rasmi</option><option>Buku</option><option>Tesis/Disertasi</option><option>Prosiding/Persidangan</option><option>Laporan</option><option>Bab dalam Buku</option><option>Lain-lain</option></select>
     <select class="f" id="fT" onchange="rDB()"><option value="">Semua tema</option></select>
     <select class="f" id="fN" onchange="rDB()"><option value="">Semua negara</option><option>Malaysia</option><option>Antarabangsa</option></select>
     <select class="f" id="fRO" onchange="rDB()"><option value="">Semua RO</option><option>RO1</option><option>RO2</option><option>RO3</option></select>
@@ -367,7 +368,8 @@ table.mx tr:hover td{background:#fafafa}
     <div class="ff"><label>Negara</label><select id="eNg"><option>Malaysia</option><option>Antarabangsa</option><option>USA</option><option>UK</option><option>Indonesia</option><option>Lain-lain</option></select></div>
     <div class="ff"><label>Tema</label><select id="eTm"></select></div>
     <div class="ff"><label>Quartile</label><select id="eQu"><option value="">-</option><option>Q1</option><option>Q2</option><option>Q3</option><option>Q4</option><option>Scopus</option><option>WoS</option><option>preprint</option><option>tiada</option></select></div>
-    <div class="ff"><label>Jenis</label><select id="eJn"><option>Kajian Kuantitatif</option><option>Kajian Kualitatif</option><option>Kajian Campuran</option><option>Eksperimen Kuasi</option><option>Meta-analisis</option><option>Sorotan Literatur</option><option>Kajian Kes</option><option>Kertas Konsep</option><option>RCT</option><option>Kajian Tindakan</option></select></div>
+    <div class="ff"><label>Kategori Sumber *</label><select id="eKat"><option>Artikel Jurnal</option><option>Dasar/Dokumen Rasmi</option><option>Buku</option><option>Tesis/Disertasi</option><option>Prosiding/Persidangan</option><option>Laporan</option><option>Bab dalam Buku</option><option>Lain-lain</option></select></div>
+    <div class="ff"><label>Jenis</label><select id="eJn"><option>Kajian Kuantitatif</option><option>Kajian Kualitatif</option><option>Kajian Campuran</option><option>Eksperimen Kuasi</option><option>Meta-analisis</option><option>Sorotan Literatur</option><option>Kajian Kes</option><option>Kertas Konsep</option><option>RCT</option><option>Kajian Tindakan</option><option>Dasar/Polisi</option><option>Statistik/Laporan Rasmi</option><option>Bukan Berkaji Rakan Sebaya</option></select></div>
     <div class="ff"><label>Tahap Artikel</label><select id="eTahap"><option value="">-</option><option>WAJIB</option><option>SOKONGAN</option><option>KONTEKS</option></select></div>
     <div class="ff"><label>Status PDF</label><select id="ePdf"><option value="full">✅ PDF diperoleh</option><option value="part">⚠ Sebahagian</option><option value="none">❌ Tiada PDF</option></select></div>
     <div class="ff full"><label>📂 Link Google Drive PDF</label><input class="gd-inp" id="eGD" placeholder="https://drive.google.com/file/d/XXXX/view"></div>
@@ -476,7 +478,7 @@ table.mx tr:hover td{background:#fafafa}
     var sheet = ss.getSheetByName("Database") || ss.insertSheet("Database");
     sheet.clearContents();
 
-    var headers = ["Kod","Tema","Penulis","Tahun","Tajuk","Jurnal","Vol","DOI",
+    var headers = ["Kod","Kategori","Tema","Penulis","Tahun","Tajuk","Jurnal","Vol","DOI",
       "Negara","Jenis","Quartile","Tahap","PDF","Sampel","Dapatan","Gap",
       "Hubungan MIARS","Ayat Tesis","Bab","RO","Topik","Nota","GDrive"];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -485,7 +487,7 @@ table.mx tr:hover td{background:#fafafa}
     if (articles.length > 0) {
       var rows = articles.map(function(a) {
         return [
-          a.kod||"", a.tema||"", a.penulis||"", a.tahun||"",
+          a.kod||"", a.kategori||"Artikel Jurnal", a.tema||"", a.penulis||"", a.tahun||"",
           a.tajuk||"", a.jurnal||"", a.vol||"", a.doi||"",
           a.negara||"", a.jenis||"", a.quartile||"", a.tahapArtikel||"",
           a.pdf||"", a.sampel||"",
@@ -616,6 +618,9 @@ function themeOf(k){for(var i=0;i<THEMES.length;i++){if(THEMES[i].k===k)return T
 function tBadge(tk){var t=themeOf(tk);return'<span class="tbdg" style="background:'+t.bg+';color:'+t.c+'">'+t.k+' '+t.n.split(" ")[0]+'</span>';}
 function qBadge(q){if(!q||q==="-")return"";var cls={Q1:"q1",Q2:"q2",Q3:"q3",Q4:"q4",Scopus:"qsc",WoS:"qwos",preprint:"qpre",tiada:""}[q]||"";return cls?'<span class="qbdg '+cls+'">'+q+'</span>':"";}
 function thBadge(th){if(!th)return"";var col={WAJIB:"#0F6E56",SOKONGAN:"#185FA5",KONTEKS:"#854F0B"}[th]||"#444";var bg={WAJIB:"#E1F5EE",SOKONGAN:"#E6F1FB",KONTEKS:"#FAEEDA"}[th]||"#f5f5f5";return'<span class="qbdg" style="background:'+bg+';color:'+col+'">'+th+'</span>';}
+var KAT_ICON={"Artikel Jurnal":"📄","Dasar/Dokumen Rasmi":"🏛️","Buku":"📚","Tesis/Disertasi":"🎓","Prosiding/Persidangan":"🗣️","Laporan":"📊","Bab dalam Buku":"📖","Lain-lain":"🔖"};
+var KAT_COL={"Artikel Jurnal":{c:"#185FA5",bg:"#E6F1FB"},"Dasar/Dokumen Rasmi":{c:"#712B13",bg:"#FAECE7"},"Buku":{c:"#3C3489",bg:"#EEEDFE"},"Tesis/Disertasi":{c:"#0F6E56",bg:"#E1F5EE"},"Prosiding/Persidangan":{c:"#854F0B",bg:"#FAEEDA"},"Laporan":{c:"#444",bg:"#F1EFE8"},"Bab dalam Buku":{c:"#993C1D",bg:"#FAECE7"},"Lain-lain":{c:"#666",bg:"#f0f0f0"}};
+function katBadge(k){if(!k)k="Artikel Jurnal";var col=KAT_COL[k]||KAT_COL["Lain-lain"];var ic=KAT_ICON[k]||"🔖";return'<span class="qbdg" style="background:'+col.bg+';color:'+col.c+'" title="Kategori Sumber">'+ic+' '+k+'</span>';}
 function stars(n){var s="";for(var i=0;i<n;i++)s+="★";return'<span class="star">'+s+'</span>';}
 function qStars(q){var m={Q1:5,Q2:4,Q3:3,Q4:2,Scopus:0,WoS:0,preprint:0};return m[q]?stars(m[q]):"";}
 
@@ -666,6 +671,7 @@ function rDB(){
   rStats();
   var q=(document.getElementById("srch")||{}).value||"";q=q.toLowerCase();
   var ft=document.getElementById("fT")?document.getElementById("fT").value:"";
+  var fkat=document.getElementById("fKat")?document.getElementById("fKat").value:"";
   var fn=document.getElementById("fN")?document.getElementById("fN").value:"";
   var fro=document.getElementById("fRO")?document.getElementById("fRO").value:"";
   var fq=document.getElementById("fQ")?document.getElementById("fQ").value:"";
@@ -676,6 +682,7 @@ function rDB(){
     var a=DB[i];
     var txt=(a.tajuk+a.penulis+a.kod+(a.dapatan||[]).join(" ")).toLowerCase();
     if(q&&txt.indexOf(q)<0)continue;
+    if(fkat&&(a.kategori||"Artikel Jurnal")!==fkat)continue;
     if(ft&&a.tema!==ft)continue;
     if(fn&&a.negara!==fn)continue;
     if(fro&&(a.ro||"").indexOf(fro)<0)continue;
@@ -697,7 +704,7 @@ function rDB(){
     for(var j=0;j<Math.min(gArr.length,2);j++)gHtml+='<span class="gtag">'+gArr[j]+'</span>';
     var sel=openKod===a.kod?" sel":"";
     html+='<div class="card'+sel+'" onclick="selArt(\''+a.kod+'\')">'+
-      '<div class="ctop"><span class="kbdg">'+a.kod+'</span>'+tBadge(a.tema)+
+      '<div class="ctop"><span class="kbdg">'+a.kod+'</span>'+katBadge(a.kategori)+tBadge(a.tema)+
       '<span class="ybdg">'+a.tahun+'</span>'+
       '<span class="nbdg '+(a.negara==="Malaysia"?"cmy":"cint")+'">'+(a.negara==="Malaysia"?"MY":"INT")+'</span>'+
       '<span style="font-size:10px">'+(pi[a.pdf]||"?")+'</span>'+gdHtml+
@@ -741,7 +748,7 @@ function selArt(kod){
     '<div class="det">'+
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;gap:8px">'+
     '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center"><span class="kbdg">'+a.kod+'</span>'+
-    tBadge(a.tema)+'<span class="nbdg '+(a.negara==="Malaysia"?"cmy":"cint")+'">'+a.negara+'</span>'+
+    katBadge(a.kategori)+tBadge(a.tema)+'<span class="nbdg '+(a.negara==="Malaysia"?"cmy":"cint")+'">'+a.negara+'</span>'+
     '<span style="font-size:11px">'+(pi[a.pdf]||"?")+'</span>'+
     (a.quartile?qBadge(a.quartile)+" "+qStars(a.quartile):"")+
     (a.impakFaktor?'<span style="font-size:10px;color:#854F0B">IF: '+a.impakFaktor+'</span>':"")+
@@ -1001,6 +1008,7 @@ function openEdit(kod,prefill){
   document.getElementById("eNg").value=a?a.negara||"Malaysia":"Malaysia";
   document.getElementById("eTm").value=a?a.tema||"T1":"T1";
   document.getElementById("eQu").value=a?a.quartile||"":"";
+  document.getElementById("eKat").value=a?a.kategori||"Artikel Jurnal":"Artikel Jurnal";
   document.getElementById("eJn").value=a?a.jenis||"Kajian Kuantitatif":"Kajian Kuantitatif";
   document.getElementById("eTahap").value=a?a.tahapArtikel||"":"";
   document.getElementById("ePdf").value=a?a.pdf||"none":"none";
@@ -1036,6 +1044,7 @@ function saveArt(){
     jurnal:document.getElementById("eJr").value,vol:document.getElementById("eVl").value,
     doi:document.getElementById("eDi").value,negara:document.getElementById("eNg").value,
     tema:document.getElementById("eTm").value,quartile:document.getElementById("eQu").value,
+    kategori:document.getElementById("eKat").value,
     jenis:document.getElementById("eJn").value,tahapArtikel:document.getElementById("eTahap").value,
     pdf:document.getElementById("ePdf").value,impakFaktor:document.getElementById("eIF").value,
     gdrive:document.getElementById("eGD").value,
@@ -1105,7 +1114,7 @@ function doImportJSON(){
       if(exists){skipped++;continue;}
       DB.push({kod:kod,tema:a.tema||"T1",penulis:a.penulis||"",tahun:parseInt(a.tahun)||2024,
         tajuk:a.tajuk||"",jurnal:a.jurnal||"",vol:a.vol||"",doi:a.doi||"",
-        negara:a.negara||"Malaysia",jenis:a.jenis||"Kajian Kuantitatif",
+        negara:a.negara||"Malaysia",kategori:a.kategori||"Artikel Jurnal",jenis:a.jenis||"Kajian Kuantitatif",
         quartile:a.quartile||"",tahapArtikel:a.tahapArtikel||"",
         pdf:a.pdf||"none",impakFaktor:a.impakFaktor||"",gdrive:a.gdrive||"",sampel:a.sampel||"",
         teori:Array.isArray(a.teori)?a.teori:(a.teori||"").split("|").map(function(s){return s.trim();}).filter(Boolean),
@@ -1156,6 +1165,10 @@ function openAnal(){
   for(var i=0;i<qs.length;i++){var n=0;for(var j=0;j<DB.length;j++){if(DB[j].quartile===qs[i])n++;}if(n>0){html+=qBadge(qs[i])+' <b>'+n+'</b> &nbsp;';qtot+=n;}}
   html+='<div style="margin-top:7px;font-size:10px;color:var(--mu)">'+qtot+' artikel dengan quartile diisi dari '+total+'</div>';
   html+='</div></div>';
+  var kats=["Artikel Jurnal","Dasar/Dokumen Rasmi","Buku","Tesis/Disertasi","Prosiding/Persidangan","Laporan","Bab dalam Buku","Lain-lain"];
+  html+='<div style="background:var(--gr);border-radius:7px;padding:10px 12px;margin-top:8px"><div style="font-size:10px;font-weight:700;color:var(--mu);margin-bottom:7px">PECAHAN KATEGORI SUMBER</div>';
+  for(var i=0;i<kats.length;i++){var n=0;for(var j=0;j<DB.length;j++){if((DB[j].kategori||"Artikel Jurnal")===kats[i])n++;}if(n>0)html+=katBadge(kats[i])+' <b>'+n+'</b> &nbsp;&nbsp;';}
+  html+='</div>';
   document.getElementById("analD").innerHTML=html;
   document.getElementById("analM").style.display="flex";
 }
