@@ -157,9 +157,12 @@ table.mx tr:hover td{background:#fafafa}
   <div class="logo">MIARS Research Intelligence System
     <small>Database · Thesis Matrix · Bab Writer · Citation · Gap · APA 7 · Import AI</small>
   </div>
+  <span id="saveInd" style="color:#B5D4F4;font-size:10px;opacity:0;transition:opacity .3s;align-self:center"></span>
   <div class="tbts">
     <button class="btn" onclick="openAnal()">📊 Analitik</button>
-    <button class="btn" onclick="exportJSON()">💾 Backup</button>
+    <button class="btn" onclick="exportJSON()" title="Muat turun fail JSON backup">💾 Backup</button>
+    <button class="btn" onclick="showLSInfo()" title="Status simpanan automatik">🔒 Auto-save</button>
+    <button class="btn" onclick="showSyncModal()" style="background:#0F9D58;border-color:#0F9D58" title="Sync ke Google Sheets">📊 Sync Sheets</button>
     <button class="btn" onclick="document.getElementById('impFile').click()">📂 Import Backup</button>
     <input type="file" id="impFile" accept=".json" style="display:none" onchange="loadBackup(this)">
     <button class="btn" onclick="exportAPA()">📄 APA TXT</button>
@@ -216,7 +219,7 @@ table.mx tr:hover td{background:#fafafa}
   </div>
   <div style="background:var(--gr);border-radius:7px;padding:10px 12px;font-size:11px">
     <b style="color:var(--n)">💡 Tip:</b> Satu artikel: <code>{}</code> | Beberapa artikel: <code>[{},{},{}]</code><br>
-    Selepas import → klik <b>💾 Backup</b>. Buka semula → <b>📂 Import Backup</b>.<br><b>📂 Tambah PDF:</b> Edit artikel (✏️) → tampal link Google Drive → Simpan.
+    <b>✅ Auto-save aktif</b> — data tersimpan automatik dalam browser ini.<br>Untuk akses dari komputer lain → klik <b>💾 Backup</b> → simpan JSON → <b>📂 Import Backup</b>.<br><b>📂 Tambah PDF:</b> Edit artikel (✏️) → tampal link Google Drive → Simpan.
   </div>
 </div>
 
@@ -399,6 +402,196 @@ table.mx tr:hover td{background:#fafafa}
     <button class="sb" onclick="closeAnal()">✕</button>
   </div>
   <div id="analD"></div>
+</div>
+</div>
+
+
+<!-- LS INFO MODAL -->
+<div id="lsModal" style="display:none" class="mov" onclick="if(event.target===this)document.getElementById('lsModal').style.display='none'">
+<div class="mb2" style="width:min(96%,420px)">
+  <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+    <div class="mt2">🔒 Status Auto-Save</div>
+    <button class="sb" onclick="document.getElementById('lsModal').style.display='none'">✕</button>
+  </div>
+  <div style="background:#E1F5EE;border-radius:7px;padding:10px 13px;margin-bottom:10px;font-size:11px;color:#085041">
+    <b>✓ Auto-save AKTIF</b><br>
+    Data awak tersimpan automatik dalam browser ini setiap kali tambah, edit atau padam artikel.
+    Data kekal walaupun refresh atau tutup browser.
+  </div>
+  <div style="background:#F8F9FA;border-radius:7px;padding:10px 13px;margin-bottom:10px;font-size:11px">
+    <b style="color:#1F4E79">📊 Status Simpanan:</b><br>
+    <span id="lsInfoText">Memeriksa...</span>
+  </div>
+  <div style="background:#FAEEDA;border-radius:7px;padding:9px 12px;margin-bottom:10px;font-size:11px;color:#854F0B">
+    <b>⚠️ Penting:</b> Auto-save hanya dalam <b>browser ini</b> sahaja.<br>
+    Untuk akses dari komputer/browser lain → klik <b>💾 Backup</b> dan simpan fail JSON.<br>
+    Untuk restore dari JSON → klik <b>📂 Import Backup</b>.
+  </div>
+  <div style="display:flex;gap:6px;justify-content:flex-end">
+    <button class="sb" onclick="lsClear()" style="color:#A32D2D;border-color:#A32D2D">🗑️ Padam simpanan</button>
+    <button class="sb" onclick="exportJSON()">💾 Backup sekarang</button>
+    <button class="sb sb-g" onclick="document.getElementById('lsModal').style.display='none'">Tutup</button>
+  </div>
+</div>
+</div>
+
+
+<!-- SYNC GOOGLE SHEETS MODAL -->
+<div id="syncModal" style="display:none" class="mov" onclick="if(event.target===this)closeSyncModal()">
+<div class="mb2" style="width:min(96%,520px)">
+  <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+    <div class="mt2" style="color:#0F9D58">📊 Sync ke Google Sheets</div>
+    <button class="sb" onclick="closeSyncModal()">✕</button>
+  </div>
+
+  <div style="background:#E8F5E9;border-radius:7px;padding:10px 13px;margin-bottom:10px;font-size:11px;color:#1B5E20">
+    <b>Cara kerja:</b> Sistem MIARS hantar data artikel terus ke Google Sheets awak secara automatik melalui Google Apps Script (percuma).
+  </div>
+
+  <!-- Step indicator -->
+  <div style="display:flex;gap:0;margin-bottom:12px">
+    <div id="step1ind" style="flex:1;text-align:center;padding:6px;background:#0F9D58;color:#fff;font-size:11px;font-weight:700;border-radius:5px 0 0 5px">1. Setup</div>
+    <div id="step2ind" style="flex:1;text-align:center;padding:6px;background:#E0E0E0;color:#666;font-size:11px;font-weight:700">2. URL</div>
+    <div id="step3ind" style="flex:1;text-align:center;padding:6px;background:#E0E0E0;color:#666;font-size:11px;font-weight:700;border-radius:0 5px 5px 0">3. Sync!</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="syncStep1">
+    <div style="font-size:12px;font-weight:700;color:#1F4E79;margin-bottom:8px">Langkah 1 — Setup Google Apps Script</div>
+    <div style="font-size:11px;color:#444;line-height:1.8;margin-bottom:8px">
+      <b>1.</b> Buka <a href="https://sheets.google.com" target="_blank" style="color:#0F9D58">sheets.google.com</a> → buat spreadsheet baharu<br>
+      <b>2.</b> Namakan: <code>MIARS Literature Database</code><br>
+      <b>3.</b> Klik <b>Extensions</b> → <b>Apps Script</b><br>
+      <b>4.</b> Padam semua teks dalam editor<br>
+      <b>5.</b> Salin kod di bawah → tampal → klik <b>💾 Save</b><br>
+      <b>6.</b> Klik <b>Deploy</b> → <b>New deployment</b><br>
+      <b>7.</b> Type: <b>Web app</b> → Execute as: <b>Me</b> → Who has access: <b>Anyone</b><br>
+      <b>8.</b> Klik <b>Deploy</b> → <b>Authorize access</b> → salin URL yang dijana
+    </div>
+    <div style="background:#1E1E2E;border-radius:6px;padding:10px;font-family:monospace;font-size:10px;color:#A6E3A1;margin-bottom:8px;max-height:160px;overflow-y:auto;white-space:pre" id="gasCode">function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var data = JSON.parse(e.postData.contents);
+    var articles = data.articles || [];
+
+    // Sheet 1: Database
+    var sheet = ss.getSheetByName("Database") || ss.insertSheet("Database");
+    sheet.clearContents();
+
+    var headers = ["Kod","Tema","Penulis","Tahun","Tajuk","Jurnal","Vol","DOI",
+      "Negara","Jenis","Quartile","Tahap","PDF","Sampel","Dapatan","Gap",
+      "Hubungan MIARS","Ayat Tesis","Bab","RO","Topik","Nota","GDrive"];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setBackground("#1F4E79").setFontColor("#FFFFFF").setFontWeight("bold");
+
+    if (articles.length > 0) {
+      var rows = articles.map(function(a) {
+        return [
+          a.kod||"", a.tema||"", a.penulis||"", a.tahun||"",
+          a.tajuk||"", a.jurnal||"", a.vol||"", a.doi||"",
+          a.negara||"", a.jenis||"", a.quartile||"", a.tahapArtikel||"",
+          a.pdf||"", a.sampel||"",
+          (a.dapatan||[]).join(" | "),
+          (a.gap||[]).join(" | "),
+          a.miars||"", a.ayat||"", a.bab||"", a.ro||"",
+          a.topik||"", a.nota||"", a.gdrive||""
+        ];
+      });
+      sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+      sheet.autoResizeColumns(1, headers.length);
+    }
+
+    // Sheet 2: Summary
+    var sum = ss.getSheetByName("Summary") || ss.insertSheet("Summary");
+    sum.clearContents();
+    sum.getRange("A1").setValue("MIARS Literature Database Summary");
+    sum.getRange("A1").setFontSize(14).setFontWeight("bold").setFontColor("#1F4E79");
+    sum.getRange("A2").setValue("Dikemas kini: " + new Date().toLocaleString());
+    sum.getRange("A2").setFontColor("#666666");
+    sum.getRange("A4").setValue("Jumlah Artikel").setFontWeight("bold");
+    sum.getRange("B4").setValue(articles.length);
+    var myCount = articles.filter(function(a){return a.negara==="Malaysia";}).length;
+    sum.getRange("A5").setValue("Artikel Malaysia").setFontWeight("bold");
+    sum.getRange("B5").setValue(myCount);
+    var q1 = articles.filter(function(a){return a.quartile==="Q1";}).length;
+    sum.getRange("A6").setValue("Artikel Q1").setFontWeight("bold");
+    sum.getRange("B6").setValue(q1);
+    sum.getRange("A8").setValue("Tema").setFontWeight("bold").setBackground("#E8F5E9");
+    sum.getRange("B8").setValue("Bilangan").setFontWeight("bold").setBackground("#E8F5E9");
+    var themes = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"];
+    var tNames = ["Penguasaan Sejarah","Murid Berprestasi Rendah","Pembelajaran Inkuiri",
+      "Adaptive Learning","RAG/AI","Scaffolding","AI Pendidikan","DDR & Model",
+      "Penilaian","Sejarah & Teknologi"];
+    themes.forEach(function(t, i) {
+      var n = articles.filter(function(a){return a.tema===t;}).length;
+      sum.getRange(9+i, 1).setValue(t + " - " + tNames[i]);
+      sum.getRange(9+i, 2).setValue(n);
+    });
+    sum.autoResizeColumns(1, 2);
+
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: articles.length + " artikel berjaya disimpan ke Google Sheets!",
+      timestamp: new Date().toISOString()
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      message: "Ralat: " + err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "MIARS Sync aktif",
+    timestamp: new Date().toISOString()
+  })).setMimeType(ContentService.MimeType.JSON);
+}</div>
+    <button class="sb" style="background:#1E1E2E;color:#A6E3A1;border-color:#1E1E2E;margin-bottom:8px" onclick="copyGASCode()">📋 Salin Kod Apps Script</button>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="sb sb-g" onclick="goSyncStep(2)">Seterusnya →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="syncStep2" style="display:none">
+    <div style="font-size:12px;font-weight:700;color:#1F4E79;margin-bottom:8px">Langkah 2 — Tampal URL Web App</div>
+    <div style="font-size:11px;color:#444;margin-bottom:8px;line-height:1.6">
+      Selepas Deploy, Google akan beri URL seperti:<br>
+      <code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:10px">https://script.google.com/macros/s/AKfycbx.../exec</code>
+    </div>
+    <div class="ff" style="margin-bottom:10px">
+      <label style="font-size:11px;font-weight:700;color:#0F9D58">Tampal URL di sini:</label>
+      <input id="gasURL" style="width:100%;padding:7px 10px;font-size:11px;border:2px solid #0F9D58;border-radius:5px;margin-top:4px" placeholder="https://script.google.com/macros/s/xxxxx/exec">
+    </div>
+    <div style="background:#FFF3E0;border-radius:6px;padding:8px 10px;font-size:10px;color:#E65100;margin-bottom:10px">
+      ⚠️ URL ini disimpan dalam localStorage browser awak sahaja. Selamat dan tidak dikongsi.
+    </div>
+    <div style="display:flex;justify-content:space-between">
+      <button class="sb" onclick="goSyncStep(1)">← Balik</button>
+      <button class="sb sb-g" onclick="saveGASURL()">Simpan URL →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="syncStep3" style="display:none">
+    <div style="font-size:12px;font-weight:700;color:#0F9D58;margin-bottom:8px">✓ Bersedia untuk Sync!</div>
+    <div style="background:#E8F5E9;border-radius:6px;padding:9px 12px;margin-bottom:10px;font-size:11px">
+      <b>URL tersimpan:</b><br>
+      <span id="savedURLDisplay" style="font-size:10px;color:#666;word-break:break-all"></span>
+    </div>
+    <div id="syncStatus" style="margin-bottom:10px;font-size:11px;color:#666">Sedia untuk sync...</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="sb" onclick="goSyncStep(2)">← Tukar URL</button>
+      <button class="sb" onclick="testSync()">🔍 Test Sambungan</button>
+      <button class="sb sb-g" style="font-size:12px;padding:7px 16px" onclick="doSync()">📊 Sync ke Google Sheets Sekarang</button>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#999">
+      💡 Tip: Sync setiap kali selesai tambah artikel baharu untuk kekalkan Sheets terkini.
+    </div>
+  </div>
 </div>
 </div>
 
@@ -635,6 +828,7 @@ function delArt(kod){
   if(!confirm("Padam artikel "+kod+"?"))return;
   DB=DB.filter(function(a){return a.kod!==kod;});
   if(openKod===kod){openKod=null;document.getElementById("detA").innerHTML="";}
+  lsSave();
   rDB();rStats();toast("Dipadam.");
 }
 
@@ -863,7 +1057,7 @@ function saveArt(){
   if(editKod){for(var i=0;i<DB.length;i++){if(DB[i].kod===editKod){DB[i]=art;break;}}}
   else DB.push(art);
   closeEdit();openKod=null;document.getElementById("detA").innerHTML="";
-  rDB();rStats();toast("✓ "+kod+" disimpan!");
+  rDB();rStats();lsSave();toast("✓ "+kod+" disimpan!");
 }
 
 function cpAPA(kod){var a=null;for(var i=0;i<DB.length;i++){if(DB[i].kod===kod){a=DB[i];break;}}if(!a)return;cpTxt(buildAPA(a));}
@@ -932,7 +1126,7 @@ function doImportJSON(){
     if(skipped)msg+=" ("+skipped+" kod sudah wujud)";
     if(errs.length)msg+="\n⚠ "+errs.join("; ");
     showIR(msg,added>0?"ok":"err");
-    if(added>0){rDB();rStats();document.getElementById("jta").value="";toast("✓ "+added+" artikel masuk! Klik Backup untuk simpan.");}
+    if(added>0){rDB();rStats();lsSave();document.getElementById("jta").value="";toast("✓ "+added+" artikel masuk! Auto-tersimpan.");}
   }catch(e){showIR("✗ JSON tidak sah: "+e.message,"err");}
 }
 function doValidate(){
@@ -1160,6 +1354,188 @@ function exportSynWord() {
   toast("✓ Disimpan sebagai TXT!");
 }
 
+
+// ═══════════════════════════════════════════════
+// AUTO-SAVE localStorage
+// ═══════════════════════════════════════════════
+var LS_KEY = "miars_db_v1";
+var LS_META = "miars_meta_v1";
+
+function lsSave() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(DB));
+    localStorage.setItem(LS_META, JSON.stringify({
+      saved: new Date().toISOString(),
+      count: DB.length
+    }));
+    showSaveIndicator();
+  } catch(e) {
+    console.warn("localStorage penuh atau tidak tersedia:", e);
+  }
+}
+
+function lsLoad() {
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      var data = JSON.parse(raw);
+      if (Array.isArray(data) && data.length > 0) {
+        DB = data;
+        var meta = JSON.parse(localStorage.getItem(LS_META)||"{}");
+        var saved = meta.saved ? new Date(meta.saved).toLocaleString("ms-MY") : "?";
+        showToastLS("✓ " + data.length + " artikel dimuatkan dari simpanan tempatan (disimpan: " + saved + ")");
+        return true;
+      }
+    }
+  } catch(e) {
+    console.warn("Gagal muatkan dari localStorage:", e);
+  }
+  return false;
+}
+
+function lsClear() {
+  if (!confirm("Padam SEMUA data simpanan tempatan? Ini tidak boleh dibuat alik.")) return;
+  try {
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_META);
+    DB = [];
+    rDB(); rStats();
+    toast("✓ Data tempatan dipadam.");
+  } catch(e) {
+    toast("Gagal padam.");
+  }
+}
+
+function showSaveIndicator() {
+  var el = document.getElementById("saveInd");
+  if (!el) return;
+  el.textContent = "💾 Tersimpan " + new Date().toLocaleTimeString("ms-MY");
+  el.style.opacity = "1";
+  setTimeout(function() { el.style.opacity = "0"; }, 2500);
+}
+
+function showToastLS(msg) {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.background = "#1F4E79";
+  el.classList.add("show");
+  setTimeout(function() {
+    el.classList.remove("show");
+    el.style.background = "";
+  }, 4000);
+}
+
+function lsInfo() {
+  try {
+    var meta = JSON.parse(localStorage.getItem(LS_META)||"{}");
+    var raw = localStorage.getItem(LS_KEY)||"[]";
+    var kb = (raw.length / 1024).toFixed(1);
+    if (meta.saved) {
+      return meta.count + " artikel | " + kb + " KB | Disimpan: " + new Date(meta.saved).toLocaleString("ms-MY");
+    }
+    return "Tiada data tersimpan";
+  } catch(e) { return "Ralat"; }
+}
+
+
+// ═══════════════════════════════════════════════
+// GOOGLE SHEETS SYNC
+// ═══════════════════════════════════════════════
+var GAS_URL_KEY = "miars_gas_url";
+
+function showSyncModal() {
+  var url = localStorage.getItem(GAS_URL_KEY) || "";
+  if (url) {
+    document.getElementById("savedURLDisplay").textContent = url;
+    document.getElementById("gasURL").value = url;
+    goSyncStep(3);
+  } else {
+    goSyncStep(1);
+  }
+  document.getElementById("syncModal").style.display = "flex";
+}
+
+function closeSyncModal() {
+  document.getElementById("syncModal").style.display = "none";
+}
+
+function goSyncStep(n) {
+  for (var i=1;i<=3;i++) {
+    var el = document.getElementById("syncStep"+i);
+    var ind = document.getElementById("step"+i+"ind");
+    if (el) el.style.display = i===n ? "block" : "none";
+    if (ind) {
+      ind.style.background = i===n ? "#0F9D58" : (i<n ? "#4CAF50" : "#E0E0E0");
+      ind.style.color = i<=n ? "#fff" : "#666";
+    }
+  }
+}
+
+function copyGASCode() {
+  var code = document.getElementById("gasCode").textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(function(){
+      toast("✓ Kod Apps Script disalin! Tampal dalam Google Apps Script editor.");
+    });
+  }
+}
+
+function saveGASURL() {
+  var url = document.getElementById("gasURL").value.trim();
+  if (!url || !url.includes("script.google.com")) {
+    alert("URL tidak sah. Pastikan URL bermula dengan https://script.google.com/macros/s/");
+    return;
+  }
+  localStorage.setItem(GAS_URL_KEY, url);
+  document.getElementById("savedURLDisplay").textContent = url;
+  toast("✓ URL disimpan!");
+  goSyncStep(3);
+}
+
+function testSync() {
+  var url = localStorage.getItem(GAS_URL_KEY);
+  if (!url) { alert("Sila simpan URL dahulu."); return; }
+  document.getElementById("syncStatus").textContent = "🔄 Menguji sambungan...";
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      document.getElementById("syncStatus").innerHTML = '<span style="color:#0F9D58">✓ Sambungan berjaya! Apps Script aktif.</span>';
+    })
+    .catch(function(e){
+      document.getElementById("syncStatus").innerHTML = '<span style="color:#A32D2D">✗ Gagal: ' + e.message + '. Semak URL dan cuba deploy semula.</span>';
+    });
+}
+
+function doSync() {
+  var url = localStorage.getItem(GAS_URL_KEY);
+  if (!url) { alert("Sila simpan URL Apps Script dahulu."); return; }
+  if (!DB.length) { alert("Tiada artikel dalam database untuk di-sync."); return; }
+  document.getElementById("syncStatus").innerHTML = '<span style="color:#1F4E79">🔄 Menghantar ' + DB.length + ' artikel ke Google Sheets...</span>';
+  var payload = { articles: DB, syncTime: new Date().toISOString() };
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.success) {
+      document.getElementById("syncStatus").innerHTML = '<span style="color:#0F9D58">✓ ' + d.message + '</span>';
+      toast("✓ " + DB.length + " artikel berjaya sync ke Google Sheets!");
+    } else {
+      document.getElementById("syncStatus").innerHTML = '<span style="color:#A32D2D">✗ ' + d.message + '</span>';
+    }
+  })
+  .catch(function(e){
+    document.getElementById("syncStatus").innerHTML = '<span style="color:#A32D2D">✗ Gagal hantar: ' + e.message + '<br>Cuba semak: (1) URL betul (2) Apps Script sudah deploy (3) Akses "Anyone"</span>';
+  });
+}
+
+function showLSInfo() {
+  document.getElementById("lsInfoText").textContent = lsInfo();
+  document.getElementById("lsModal").style.display = "flex";
+}
+
 function cpAyat(kod){
   var a=null;
   for(var i=0;i<DB.length;i++){if(DB[i].kod===kod){a=DB[i];break;}}
@@ -1167,7 +1543,14 @@ function cpAyat(kod){
   var t=a.ayat||buildAPA(a);
   cpTxt(t);
 }
-populateSels();rStats();
+populateSels();
+// AUTO-LOAD dari localStorage
+if(lsLoad()) {
+  rDB();
+  rStats();
+} else {
+  rStats();
+}
 </script>
 </body>
 </html>
